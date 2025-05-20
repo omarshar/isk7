@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المشتريات السريعة - اسكندويتش</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Add QuaggaJS for barcode scanning -->
+    <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c1e5a;
+            --secondary-color: #e74c3c;
+            --accent-color: #3498db;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        .navbar {
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: white !important;
+            display: flex;
+            align-items: center;
+        }
+        
+        .navbar-logo {
+            height: 40px;
+            margin-left: 10px;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            margin: 0 10px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+            transform: translateY(-2px);
+        }
+        
+        .nav-link.active {
+            color: white !important;
+            border-bottom: 2px solid white;
+        }
+        
+        .page-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 15px 20px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 8px 20px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1e1645;
+            border-color: #1e1645;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            transition: all 0.3s;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            transition: all 0.3s;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #c82333;
+            transform: translateY(-2px);
+        }
+        
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+        
+        .table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .purchase-filters {
+            margin-bottom: 20px;
+        }
+        
+        .purchase-summary {
+            margin-bottom: 30px;
+        }
+        
+        .summary-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .summary-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .summary-label {
+            color: #6c757d;
+        }
+        
+        .input-group-text {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .scan-input {
+            margin-bottom: 20px;
+        }
+        
+        .delete-confirm-modal .modal-header {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .delete-confirm-modal .modal-footer {
+            justify-content: space-between;
+        }
+        
+        /* Barcode scanner styles */
+        #barcode-scanner {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            overflow: hidden;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        #barcode-scanner canvas {
+            width: 100%;
+        }
+        
+        #barcode-scanner video {
+            width: 100%;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+        }
+        
+        .scanner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+        
+        .scanner-laser {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: red;
+            z-index: 11;
+            box-shadow: 0 0 4px red;
+            animation: scan 2s infinite;
+        }
+        
+        @keyframes scan {
+            0% { top: 30%; }
+            50% { top: 70%; }
+            100% { top: 30%; }
+        }
+        
+        .scan-result {
+            padding: 10px;
+            margin-top: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .scan-result.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .scan-result.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        /* Supplier autocomplete styles */
+        .supplier-autocomplete {
+            position: relative;
+        }
+        
+        .supplier-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: white;
+            border: 1px solid #ced4da;
+            border-radius: 0 0 5px 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .supplier-suggestion-item {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        
+        .supplier-suggestion-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        /* Add supplier button */
+        .add-supplier-btn {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <img src="images/logo.jpg" alt="اسكندويتش" class="navbar-logo">
+                نظام إدارة المخزون
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-home nav-icon"></i>الرئيسية
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="branches.html">
+                            <i class="fas fa-store nav-icon"></i>الفروع
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="products.html">
+                            <i class="fas fa-hamburger nav-icon"></i>المنتجات
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="inventory.html">
+                            <i class="fas fa-clipboard-list nav-icon"></i>جرد المخزون
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="waste.html">
+                            <i class="fas fa-trash nav-icon"></i>الويستات الشهرية
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle active" href="#" id="purchasesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-shopping-cart nav-icon"></i>المشتريات
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="purchasesDropdown">
+                            <li><a class="dropdown-item active" href="purchases.html">المشتريات السريعة</a></li>
+                            <li><a class="dropdown-item" href="invoices.html">الفواتير</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="cost.html">
+                            <i class="fas fa-calculator nav-icon"></i>حساب التكلفة المباشرة
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h1 class="mb-2"><i class="fas fa-shopping-cart me-2"></i> المشتريات السريعة</h1>
+                    <p class="lead">إدارة المشتريات وطلب المنتجات</p>
+                </div>
+                <div class="col-lg-4 text-lg-end d-flex align-items-center justify-content-lg-end">
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPurchaseModal">
+                        <i class="fas fa-plus-circle me-2"></i>إضافة طلب جديد
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <section class="container">
+        <!-- Scan Input -->
+        <div class="row scan-input">
+            <div class="col-md-8 mb-3">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="مسح باركود المنتج..." id="scanInput">
+                    <button class="btn btn-primary" type="button" onclick="scanProduct()">
+                        <i class="fas fa-barcode me-2"></i>مسح
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-outline-primary me-2" onclick="toggleScanner()">
+                        <i class="fas fa-camera me-1"></i> فتح الماسح الضوئي
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barcode Scanner -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div id="barcode-scanner">
+                    <div class="scanner-overlay"></div>
+                    <div class="scanner-laser"></div>
+                    <video id="scanner-video"></video>
+                    <canvas id="scanner-canvas" class="d-none"></canvas>
+                    <div class="text-center mt-3">
+                        <button class="btn btn-danger" onclick="stopScanner()">
+                            <i class="fas fa-times me-1"></i> إغلاق الماسح
+                        </button>
+                    </div>
+                </div>
+                <div id="scan-result" class="scan-result text-center">
+                    <span id="scan-result-text"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purchase Filters -->
+        <div class="row purchase-filters">
+            <div class="col-md-4 mb-3">
+                <label for="supplierFilter" class="form-label">المورد</label>
+                <select class="form-select" id="supplierFilter" onchange="applyFilters()">
+                    <option value="all">جميع الموردين</option>
+                    <!-- Supplier options will be dynamically populated -->
+                </select>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="statusFilter" class="form-label">الحالة</label>
+                <select class="form-select" id="statusFilter" onchange="applyFilters()">
+                    <option value="all">جميع الحالات</option>
+                    <option value="pending">قيد الانتظار</option>
+                    <option value="ordered">تم الطلب</option>
+                    <option value="received">تم الاستلام</option>
+                </select>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="purchaseDate" class="form-label">تاريخ الطلب</label>
+                <input type="date" class="form-control" id="purchaseDate" value="2025-05-18">
+            </div>
+        </div>
+
+        <!-- Purchase Summary -->
+        <div class="row purchase-summary">
+            <div class="col-md-3 mb-3">
+                <div class="summary-card">
+                    <i class="fas fa-shopping-basket summary-icon"></i>
+                    <div class="summary-value" id="totalItems">24</div>
+                    <div class="summary-label">إجمالي المنتجات</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="summary-card">
+                    <i class="fas fa-money-bill-wave summary-icon"></i>
+                    <div class="summary-value" id="totalCost">3,250.00 ريال</div>
+                    <div class="summary-label">إجمالي التكلفة</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="summary-card">
+                    <i class="fas fa-clock summary-icon"></i>
+                    <div class="summary-value" id="pendingItems">8</div>
+                    <div class="summary-label">منتجات قيد الانتظار</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="summary-card">
+                    <i class="fas fa-check-circle summary-icon"></i>
+                    <div class="summary-value" id="receivedItems">16</div>
+                    <div class="summary-label">منتجات تم استلامها</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purchases Table -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">قائمة المشتريات</h5>
+                <div>
+                    <button class="btn btn-sm btn-outline-light me-2" onclick="printPurchases()">
+                        <i class="fas fa-print me-1"></i> طباعة
+                    </button>
+                    <button class="btn btn-sm btn-outline-light" onclick="exportPurchases()">
+                        <i class="fas fa-file-export me-1"></i> تصدير
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>اسم المنتج</th>
+                                <th>المورد</th>
+                                <th>الكمية</th>
+                                <th>سعر الوحدة</th>
+                                <th>الإجمالي</th>
+                                <th>تاريخ الطلب</th>
+                                <th>الحالة</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="purchasesTableBody">
+                            <!-- Table content will be dynamically generated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add Purchase Modal -->
+    <div class="modal fade" id="addPurchaseModal" tabindex="-1" aria-labelledby="addPurchaseModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="addPurchaseModalLabel">إضافة طلب جديد</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addPurchaseForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="productName" class="form-label">اسم المنتج</label>
+                                <input type="text" class="form-control" id="productName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="supplier" class="form-label">المورد</label>
+                                <div class="supplier-autocomplete">
+                                    <input type="text" class="form-control" id="supplier" required autocomplete="off">
+                                    <div class="supplier-suggestions" id="supplierSuggestions"></div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-primary add-supplier-btn" onclick="addNewSupplier()">
+                                    <i class="fas fa-plus-circle me-1"></i> إضافة مورد جديد
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="quantity" class="form-label">الكمية</label>
+                                <input type="number" class="form-control" id="quantity" min="1" value="1" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="unitPrice" class="form-label">سعر الوحدة</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="unitPrice" step="0.01" required>
+                                    <span class="input-group-text">ريال</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="status" class="form-label">الحالة</label>
+                                <select class="form-select" id="status" required>
+                                    <option value="pending">قيد الانتظار</option>
+                                    <option value="ordered">تم الطلب</option>
+                                    <option value="received">تم الاستلام</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">ملاحظات</label>
+                            <textarea class="form-control" id="notes" rows="3"></textarea>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="addToInventory" checked>
+                            <label class="form-check-label" for="addToInventory">
+                                إضافة للمخزون مباشرة
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" onclick="addPurchase()">إضافة</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Supplier Modal -->
+    <div class="modal fade" id="addSupplierModal" tabindex="-1" aria-labelledby="addSupplierModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="addSupplierModalLabel">إضافة مورد جديد</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addSupplierForm">
+                        <div class="mb-3">
+                            <label for="newSupplierName" class="form-label">اسم المورد</label>
+                            <input type="text" class="form-control" id="newSupplierName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="supplierPhone" class="form-label">رقم الهاتف</label>
+                            <input type="tel" class="form-control" id="supplierPhone">
+                        </div>
+                        <div class="mb-3">
+                            <label for="supplierEmail" class="form-label">البريد الإلكتروني</label>
+                            <input type="email" class="form-control" id="supplierEmail">
+                        </div>
+                        <div class="mb-3">
+                            <label for="supplierNotes" class="form-label">ملاحظات</label>
+                            <textarea class="form-control" id="supplierNotes" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" onclick="saveNewSupplier()">حفظ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade delete-confirm-modal" id="deletePurchaseModal" tabindex="-1" aria-labelledby="deletePurchaseModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deletePurchaseModalLabel">تأكيد الحذف</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>هل أنت متأكد من رغبتك في حذف هذا الطلب؟</p>
+                    <p class="text-danger">هذا الإجراء لا يمكن التراجع عنه.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">حذف</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer text-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <img src="images/logo.jpg" alt="اسكندويتش" class="navbar-logo">
+                </div>
+                <div class="col-md-8">
+                    <p class="mb-0">© 2025 اسكندويتش - نظام إدارة المخزون. جميع الحقوق محفوظة.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        // Global variables
+        let purchasesData = [];
+        let productsData = []; // Will store products data
+        let deletedProducts = []; // Will store deleted product IDs
+        let suppliersData = []; // Will store suppliers data
+        let quaggaScanner = null;
+        
+        // Load data from localStorage or initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPurchasesData();
+            loadProductsData();
+            loadDeletedProducts();
+            loadSuppliersData();
+            
+            // Set up scan input event listener
+            document.getElementById('scanInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    scanProduct();
+                }
+            });
+            
+            // Set up delete confirmation modal
+            const deletePurchaseModal = document.getElementById('deletePurchaseModal');
+            deletePurchaseModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const purchaseId = button.getAttribute('data-purchase-id');
+                document.getElementById('confirmDeleteBtn').setAttribute('data-purchase-id', purchaseId);
+            });
+            
+            document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+                const purchaseId = parseInt(this.getAttribute('data-purchase-id'));
+                deletePurchaseConfirmed(purchaseId);
+            });
+            
+            // Set up supplier autocomplete
+            const supplierInput = document.getElementById('supplier');
+            supplierInput.addEventListener('input', function() {
+                showSupplierSuggestions(this.value);
+            });
+            
+            supplierInput.addEventListener('focus', function() {
+                if (this.value.length > 0) {
+                    showSupplierSuggestions(this.value);
+                }
+            });
+            
+            // Close supplier suggestions when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.supplier-autocomplete')) {
+                    document.getElementById('supplierSuggestions').style.display = 'none';
+                }
+            });
+            
+            // Populate supplier filter
+            populateSupplierFilter();
+        });
+        
+        // Load purchases data from localStorage or Firestore
+        function loadPurchasesData() {
+            // Try to load from Firestore first
+            if (typeof db !== 'undefined') {
+                getCollection('purchases')
+                    .then((querySnapshot) => {
+                        purchasesData = [];
+                        querySnapshot.forEach((doc) => {
+                            const purchase = doc.data();
+                            purchase.id = parseInt(doc.id);
+                            purchasesData.push(purchase);
+                        });
+                        displayPurchases();
+                    })
+                    .catch((error) => {
+                        console.error("Error loading purchases from Firestore:", error);
+                        // Fallback to localStorage
+                        loadFromLocalStorage();
+                    });
+            } else {
+                // Fallback to localStorage
+                loadFromLocalStorage();
+            }
+        }
+        
+        // Load from localStorage
+        function loadFromLocalStorage() {
+            const storedData = localStorage.getItem('purchasesData');
+            if (storedData) {
+                purchasesData = JSON.parse(storedData);
+            } else {
+                // Initialize with sample data if not exists
+                purchasesData = [
+                    {
+                        id: 1,
+                        productName: "ساندويتش دجاج",
+                        supplier: "شركة الغذاء الطازج",
+                        quantity: 50,
+                        unitPrice: 5.25,
+                        total: 262.50,
+                        date: "18/05/2025",
+                        status: "pending",
+                        notes: ""
+                    },
+                    {
+                        id: 2,
+                        productName: "ساندويتش لحم",
+                        supplier: "شركة الغذاء الطازج",
+                        quantity: 30,
+                        unitPrice: 7.50,
+                        total: 225.00,
+                        date: "18/05/2025",
+                        status: "ordered",
+                        notes: ""
+                    },
+                    {
+                        id: 3,
+                        productName: "كولا",
+                        supplier: "مصنع المشروبات الوطني",
+                        quantity: 100,
+                        unitPrice: 1.50,
+                        total: 150.00,
+                        date: "17/05/2025",
+                        status: "received",
+                        notes: ""
+                    },
+                    {
+                        id: 4,
+                        productName: "بطاطس مقلية",
+                        supplier: "مؤسسة الخير للتوريدات",
+                        quantity: 80,
+                        unitPrice: 2.75,
+                        total: 220.00,
+                        date: "16/05/2025",
+                        status: "received",
+                        notes: ""
+                    }
+                ];
+                savePurchasesData();
+            }
+            
+            // Display purchases
+            displayPurchases();
+        }
+        
+        // Load products data from localStorage or Firestore
+        function loadProductsData() {
+            // Try to load from Firestore first
+            if (typeof db !== 'undefined') {
+                getCollection('products')
+                    .then((querySnapshot) => {
+                        productsData = [];
+                        querySnapshot.forEach((doc) => {
+                            const product = doc.data();
+                            product.id = parseInt(doc.id);
+                            productsData.push(product);
+                        });
+                    })
+                    .catch((error) => {
+                        console.error("Error loading products from Firestore:", error);
+                        // Fallback to localStorage
+                        const storedData = localStorage.getItem('productsData');
+                        if (storedData) {
+                            productsData = JSON.parse(storedData);
+                        } else {
+                            // Initialize with sample data if not exists
+                            productsData = [
+                                { id: 1, name: "ساندويتش دجاج", category: "ساندويتشات", price: 7.50, unit: "قطعة", barcode: "1234567890123" },
+                                { id: 2, name: "ساندويتش لحم", category: "ساندويتشات", price: 9.75, unit: "قطعة", barcode: "2234567890123" },
+                                { id: 3, name: "ساندويتش فلافل", category: "ساندويتشات", price: 4.25, unit: "قطعة", barcode: "3234567890123" },
+                                { id: 4, name: "كولا", category: "مشروبات", price: 2.00, unit: "علبة", barcode: "4234567890123" },
+                                { id: 5, name: "بطاطس مقلية", category: "إضافات", price: 3.25, unit: "كيس", barcode: "5234567890123" },
+                                { id: 6, name: "كنافة", category: "حلويات", price: 6.50, unit: "قطعة", barcode: "6234567890123" }
+                            ];
+                            localStorage.setItem('productsData', JSON.stringify(productsData));
+                        }
+                    });
+            } else {
+                // Fallback to localStorage
+                const storedData = localStorage.getItem('productsData');
+                if (storedData) {
+                    productsData = JSON.parse(storedData);
+                } else {
+                    // Initialize with sample data if not exists
+                    productsData = [
+                        { id: 1, name: "ساندويتش دجاج", category: "ساندويتشات", price: 7.50, unit: "قطعة", barcode: "1234567890123" },
+                        { id: 2, name: "ساندويتش لحم", category: "ساندويتشات", price: 9.75, unit: "قطعة", barcode: "2234567890123" },
+                        { id: 3, name: "ساندويتش فلافل", category: "ساندويتشات", price: 4.25, unit: "قطعة", barcode: "3234567890123" },
+                        { id: 4, name: "كولا", category: "مشروبات", price: 2.00, unit: "علبة", barcode: "4234567890123" },
+                        { id: 5, name: "بطاطس مقلية", category: "إضافات", price: 3.25, unit: "كيس", barcode: "5234567890123" },
+                        { id: 6, name: "كنافة", category: "حلويات", price: 6.50, unit: "قطعة", barcode: "6234567890123" }
+                    ];
+                    localStorage.setItem('productsData', JSON.stringify(productsData));
+                }
+            }
+        }
+        
+        // Load suppliers data from localStorage or Firestore
+        function loadSuppliersData() {
+            // Try to load from Firestore first
+            if (typeof db !== 'undefined') {
+                getCollection('suppliers')
+                    .then((querySnapshot) => {
+                        suppliersData = [];
+                        querySnapshot.forEach((doc) => {
+                            const supplier = doc.data();
+                            supplier.id = parseInt(doc.id);
+                            suppliersData.push(supplier);
+                        });
+                    })
+                    .catch((error) => {
+                        console.error("Error loading suppliers from Firestore:", error);
+                        // Fallback to localStorage
+                        loadSuppliersFromLocalStorage();
+                    });
+            } else {
+                // Fallback to localStorage
+                loadSuppliersFromLocalStorage();
+            }
+        }
+        
+        // Load suppliers from localStorage
+        function loadSuppliersFromLocalStorage() {
+            const storedData = localStorage.getItem('suppliersData');
+            if (storedData) {
+                suppliersData = JSON.parse(storedData);
+            } else {
+                // Initialize with sample data if not exists
+                suppliersData = [
+                    { id: 1, name: "شركة الغذاء الطازج", phone: "0512345678", email: "info@freshfood.com", notes: "" },
+                    { id: 2, name: "مؤسسة الخير للتوريدات", phone: "0523456789", email: "info@alkhair.com", notes: "" },
+                    { id: 3, name: "مصنع المشروبات الوطني", phone: "0534567890", email: "info@nationaldrinks.com", notes: "" }
+                ];
+                localStorage.setItem('suppliersData', JSON.stringify(suppliersData));
+            }
+        }
+        
+        // Load deleted products from localStorage
+        function loadDeletedProducts() {
+            const storedData = localStorage.getItem('deletedProducts');
+            if (storedData) {
+                deletedProducts = JSON.parse(storedData);
+                
+                // Remove deleted products from purchases
+                removeDeletedProductsFromPurchases();
+            } else {
+                deletedProducts = [];
+                localStorage.setItem('deletedProducts', JSON.stringify(deletedProducts));
+            }
+        }
+        
+        // Remove deleted products from purchases
+        function removeDeletedProductsFromPurchases() {
+            if (deletedProducts.length === 0) return;
+            
+            let dataChanged = false;
+            
+            // Filter out purchases for deleted products
+            const originalLength = purchasesData.length;
+            purchasesData = purchasesData.filter(purchase => {
+                // Find product by name
+                const product = productsData.find(p => p.name === purchase.productName);
+                return !product || !deletedProducts.includes(product.id);
+            });
+            
+            if (originalLength !== purchasesData.length) {
+                dataChanged = true;
+                savePurchasesData();
+                // Refresh the view
+                displayPurchases();
+            }
+        }
+        
+        // Save purchases data to localStorage and/or Firestore
+        function savePurchasesData() {
+            // Save to Firestore if available
+            if (typeof db !== 'undefined') {
+                // This is a simplified approach - in a real app, you'd handle this differently
+                purchasesData.forEach(purchase => {
+                    const purchaseId = purchase.id.toString();
+                    const purchaseData = { ...purchase };
+                    delete purchaseData.id; // Remove id from data to avoid duplication
+                    
+                    // Check if document exists
+                    getDocument('purchases', purchaseId)
+                        .then((doc) => {
+                            if (doc.exists()) {
+                                // Update existing document
+                                updateDocument('purchases', purchaseId, purchaseData);
+                            } else {
+                                // Add new document with custom ID
+                                db.collection('purchases').doc(purchaseId).set(purchaseData);
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Error checking purchase document:", error);
+                            // Fallback to localStorage
+                            localStorage.setItem('purchasesData', JSON.stringify(purchasesData));
+                        });
+                });
+            } else {
+                // Fallback to localStorage
+                localStorage.setItem('purchasesData', JSON.stringify(purchasesData));
+            }
+            
+            // Update inventory data if needed
+            updateInventoryBasedOnPurchases();
+        }
+        
+        // Update inventory data based on purchases
+        function updateInventoryBasedOnPurchases() {
+            // Get inventory data
+            let inventoryData = [];
+            
+            // Try to load from Firestore first
+            if (typeof db !== 'undefined') {
+                getCollection('inventory')
+                    .then((querySnapshot) => {
+                        inventoryData = [];
+                        querySnapshot.forEach((doc) => {
+                            const item = doc.data();
+                            item.id = parseInt(doc.id);
+                            inventoryData.push(item);
+                        });
+                        updateInventoryWithPurchases(inventoryData);
+                    })
+                    .catch((error) => {
+                        console.error("Error loading inventory from Firestore:", error);
+                        // Fallback to localStorage
+                        const storedInventory = localStorage.getItem('inventoryData');
+                        if (storedInventory) {
+                            inventoryData = JSON.parse(storedInventory);
+                            updateInventoryWithPurchases(inventoryData);
+                        }
+                    });
+            } else {
+                // Fallback to localStorage
+                const storedInventory = localStorage.getItem('inventoryData');
+                if (storedInventory) {
+                    inventoryData = JSON.parse(storedInventory);
+                    updateInventoryWithPurchases(inventoryData);
+                }
+            }
+        }
+        
+        // Update inventory with purchases
+        function updateInventoryWithPurchases(inventoryData) {
+            // Get the latest received purchases
+            const receivedPurchases = purchasesData.filter(p => p.status === 'received');
+            
+            // Update inventory based on received purchases
+            receivedPurchases.forEach(purchase => {
+                // Find product in inventory
+                const inventoryItem = inventoryData.find(item => item.productName === purchase.productName);
+                
+                if (inventoryItem) {
+                    // Update existing inventory item
+                    inventoryItem.quantity += purchase.quantity;
+                    inventoryItem.lastUpdated = new Date().toISOString();
+                } else {
+                    // Add new inventory item
+                    inventoryData.push({
+                        id: inventoryData.length > 0 ? Math.max(...inventoryData.map(i => i.id)) + 1 : 1,
+                        productName: purchase.productName,
+                        quantity: purchase.quantity,
+                        unit: getProductUnit(purchase.productName),
+                        lastUpdated: new Date().toISOString()
+                    });
+                }
+            });
+            
+            // Save updated inventory
+            if (typeof db !== 'undefined') {
+                // Save to Firestore
+                inventoryData.forEach(item => {
+                    const itemId = item.id.toString();
+                    const itemData = { ...item };
+                    delete itemData.id; // Remove id from data to avoid duplication
+                    
+                    // Check if document exists
+                    getDocument('inventory', itemId)
+                        .then((doc) => {
+                            if (doc.exists()) {
+                                // Update existing document
+                                updateDocument('inventory', itemId, itemData);
+                            } else {
+                                // Add new document with custom ID
+                                db.collection('inventory').doc(itemId).set(itemData);
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Error checking inventory document:", error);
+                        });
+                });
+            } else {
+                // Save to localStorage
+                localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
+            }
+            
+            console.log("Inventory updated based on purchases");
+        }
+        
+        // Get product unit
+        function getProductUnit(productName) {
+            const product = productsData.find(p => p.name === productName);
+            return product ? product.unit : "قطعة";
+        }
+        
+        // Display purchases based on filters
+        function displayPurchases() {
+            const tableBody = document.getElementById('purchasesTableBody');
+            tableBody.innerHTML = '';
+            
+            // Get filtered data
+            const filteredPurchases = getFilteredPurchases();
+            
+            if (filteredPurchases.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="9" class="text-center">لا توجد مشتريات مطابقة للفلتر</td>
+                `;
+                tableBody.appendChild(row);
+                
+                // Update summary with zeros
+                updateSummary([]);
+                return;
+            }
+            
+            filteredPurchases.forEach(purchase => {
+                const statusClass = getStatusClass(purchase.status);
+                const statusText = getStatusText(purchase.status);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${purchase.id}</td>
+                    <td>${purchase.productName}</td>
+                    <td>${purchase.supplier}</td>
+                    <td>${purchase.quantity}</td>
+                    <td>${purchase.unitPrice.toFixed(2)} ريال</td>
+                    <td>${purchase.total.toFixed(2)} ريال</td>
+                    <td>${purchase.date}</td>
+                    <td><span class="badge ${statusClass}">${statusText}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-warning me-1" onclick="editPurchase(${purchase.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deletePurchaseModal" data-purchase-id="${purchase.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Update summary
+            updateSummary(filteredPurchases);
+        }
+        
+        // Get filtered purchases based on current filters
+        function getFilteredPurchases() {
+            const supplierFilter = document.getElementById('supplierFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            return purchasesData.filter(purchase => {
+                // Check supplier filter
+                if (supplierFilter !== 'all') {
+                    if (purchase.supplier !== supplierFilter) {
+                        return false;
+                    }
+                }
+                
+                // Check status filter
+                if (statusFilter !== 'all' && purchase.status !== statusFilter) {
+                    return false;
+                }
+                
+                return true;
+            });
+        }
+        
+        // Apply filters
+        function applyFilters() {
+            displayPurchases();
+        }
+        
+        // Get status class for badge
+        function getStatusClass(status) {
+            switch (status) {
+                case 'pending':
+                    return 'bg-warning';
+                case 'ordered':
+                    return 'bg-info';
+                case 'received':
+                    return 'bg-success';
+                default:
+                    return 'bg-secondary';
+            }
+        }
+        
+        // Get status text
+        function getStatusText(status) {
+            switch (status) {
+                case 'pending':
+                    return 'قيد الانتظار';
+                case 'ordered':
+                    return 'تم الطلب';
+                case 'received':
+                    return 'تم الاستلام';
+                default:
+                    return 'غير معروف';
+            }
+        }
+        
+        // Update purchase summary
+        function updateSummary(purchases) {
+            const totalItems = purchases.reduce((sum, purchase) => sum + purchase.quantity, 0);
+            const totalCost = purchases.reduce((sum, purchase) => sum + purchase.total, 0);
+            const pendingItems = purchases
+                .filter(purchase => purchase.status === 'pending')
+                .reduce((sum, purchase) => sum + purchase.quantity, 0);
+            const receivedItems = purchases
+                .filter(purchase => purchase.status === 'received')
+                .reduce((sum, purchase) => sum + purchase.quantity, 0);
+            
+            document.getElementById('totalItems').textContent = totalItems;
+            document.getElementById('totalCost').textContent = totalCost.toFixed(2) + ' ريال';
+            document.getElementById('pendingItems').textContent = pendingItems;
+            document.getElementById('receivedItems').textContent = receivedItems;
+        }
+        
+        // Add new purchase
+        function addPurchase() {
+            const productName = document.getElementById('productName').value;
+            const supplier = document.getElementById('supplier').value;
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const unitPrice = parseFloat(document.getElementById('unitPrice').value);
+            const status = document.getElementById('status').value;
+            const notes = document.getElementById('notes').value;
+            const addToInventory = document.getElementById('addToInventory').checked;
+            
+            // Validate form
+            if (!productName || !supplier || isNaN(quantity) || isNaN(unitPrice) || !status) {
+                alert('يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+            
+            // Calculate total
+            const total = quantity * unitPrice;
+            
+            // Get today's date in DD/MM/YYYY format
+            const today = new Date();
+            const formattedDate = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getFullYear()}`;
+            
+            // Generate new ID (max ID + 1)
+            const newId = purchasesData.length > 0 ? Math.max(...purchasesData.map(p => p.id)) + 1 : 1;
+            
+            // Create new purchase object
+            const newPurchase = {
+                id: newId,
+                productName,
+                supplier,
+                quantity,
+                unitPrice,
+                total,
+                date: formattedDate,
+                status,
+                notes
+            };
+            
+            // Add to purchases data
+            purchasesData.push(newPurchase);
+            
+            // Save and refresh display
+            savePurchasesData();
+            
+            // Add to inventory directly if checked and status is received
+            if (addToInventory && status === 'received') {
+                addToInventoryDirectly(productName, quantity);
+            }
+            
+            // Save supplier if it's new
+            saveSupplierIfNew(supplier);
+            
+            // Refresh display
+            displayPurchases();
+            
+            // Close modal and reset form
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addPurchaseModal'));
+            modal.hide();
+            document.getElementById('addPurchaseForm').reset();
+            
+            // Show success message
+            alert('تمت إضافة الطلب بنجاح');
+        }
+        
+        // Add to inventory directly
+        function addToInventoryDirectly(productName, quantity) {
+            // Get inventory data
+            let inventoryData = [];
+            
+            // Try to load from Firestore first
+            if (typeof db !== 'undefined') {
+                getCollection('inventory')
+                    .then((querySnapshot) => {
+                        inventoryData = [];
+                        querySnapshot.forEach((doc) => {
+                            const item = doc.data();
+                            item.id = parseInt(doc.id);
+                            inventoryData.push(item);
+                        });
+                        addToInventory(inventoryData, productName, quantity);
+                    })
+                    .catch((error) => {
+                        console.error("Error loading inventory from Firestore:", error);
+                        // Fallback to localStorage
+                        const storedInventory = localStorage.getItem('inventoryData');
+                        if (storedInventory) {
+                            inventoryData = JSON.parse(storedInventory);
+                        }
+                        addToInventory(inventoryData, productName, quantity);
+                    });
+            } else {
+                // Fallback to localStorage
+                const storedInventory = localStorage.getItem('inventoryData');
+                if (storedInventory) {
+                    inventoryData = JSON.parse(storedInventory);
+                }
+                addToInventory(inventoryData, productName, quantity);
+            }
+        }
+        
+        // Add to inventory
+        function addToInventory(inventoryData, productName, quantity) {
+            // Find product in inventory
+            const inventoryItem = inventoryData.find(item => item.productName === productName);
+            
+            if (inventoryItem) {
+                // Update existing inventory item
+                inventoryItem.quantity += quantity;
+                inventoryItem.lastUpdated = new Date().toISOString();
+            } else {
+                // Add new inventory item
+                inventoryData.push({
+                    id: inventoryData.length > 0 ? Math.max(...inventoryData.map(i => i.id)) + 1 : 1,
+                    productName: productName,
+                    quantity: quantity,
+                    unit: getProductUnit(productName),
+                    lastUpdated: new Date().toISOString()
+                });
+            }
+            
+            // Save updated inventory
+            if (typeof db !== 'undefined') {
+                // Save to Firestore
+                inventoryData.forEach(item => {
+                    const itemId = item.id.toString();
+                    const itemData = { ...item };
+                    delete itemData.id; // Remove id from data to avoid duplication
+                    
+                    // Check if document exists
+                    getDocument('inventory', itemId)
+                        .then((doc) => {
+                            if (doc.exists()) {
+                                // Update existing document
+                                updateDocument('inventory', itemId, itemData);
+                            } else {
+                                // Add new document with custom ID
+                                db.collection('inventory').doc(itemId).set(itemData);
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Error checking inventory document:", error);
+                        });
+                });
+            } else {
+                // Save to localStorage
+                localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
+            }
+            
+            console.log(`Added ${quantity} of ${productName} directly to inventory`);
+        }
+        
+        // Save supplier if it's new
+        function saveSupplierIfNew(supplierName) {
+            // Check if supplier already exists
+            const existingSupplier = suppliersData.find(s => s.name === supplierName);
+            
+            if (!existingSupplier) {
+                // Add new supplier
+                const newSupplier = {
+                    id: suppliersData.length > 0 ? Math.max(...suppliersData.map(s => s.id)) + 1 : 1,
+                    name: supplierName,
+                    phone: "",
+                    email: "",
+                    notes: "تمت إضافته تلقائيًا من المشتريات"
+                };
+                
+                suppliersData.push(newSupplier);
+                
+                // Save to Firestore if available
+                if (typeof db !== 'undefined') {
+                    const supplierId = newSupplier.id.toString();
+                    const supplierData = { ...newSupplier };
+                    delete supplierData.id; // Remove id from data to avoid duplication
+                    
+                    db.collection('suppliers').doc(supplierId).set(supplierData)
+                        .catch((error) => {
+                            console.error("Error adding supplier to Firestore:", error);
+                        });
+                }
+                
+                // Also save to localStorage as fallback
+                localStorage.setItem('suppliersData', JSON.stringify(suppliersData));
+                
+                // Update supplier filter
+                populateSupplierFilter();
+                
+                console.log(`Added new supplier: ${supplierName}`);
+            }
+        }
+        
+        // Edit purchase
+        function editPurchase(purchaseId) {
+            const purchase = purchasesData.find(p => p.id === purchaseId);
+            if (purchase) {
+                // For this demo, we'll just show an alert
+                // In a real app, this would open a modal with the purchase data
+                alert(`تعديل الطلب ${purchaseId} (هذه الوظيفة قيد التطوير)`);
+            } else {
+                alert('الطلب غير موجود');
+            }
+        }
+        
+        // Delete purchase (confirmation)
+        function deletePurchaseConfirmed(purchaseId) {
+            // Find purchase index
+            const purchaseIndex = purchasesData.findIndex(p => p.id === purchaseId);
+            
+            if (purchaseIndex !== -1) {
+                // Remove from array
+                purchasesData.splice(purchaseIndex, 1);
+                
+                // Save and refresh display
+                savePurchasesData();
+                displayPurchases();
+                
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('deletePurchaseModal'));
+                modal.hide();
+                
+                // Show success message
+                alert('تم حذف الطلب بنجاح');
+            } else {
+                alert('الطلب غير موجود');
+            }
+        }
+        
+        // Scan product
+        function scanProduct() {
+            const scanInput = document.getElementById('scanInput');
+            const barcode = scanInput.value.trim();
+            
+            if (barcode) {
+                // Look up the product by barcode
+                const product = findProductByBarcode(barcode);
+                
+                if (product && !deletedProducts.includes(product.id)) {
+                    // Show scan result
+                    showScanResult(true, `تم العثور على المنتج: ${product.name}`);
+                    
+                    // Open add purchase modal and pre-fill with product info
+                    document.getElementById('productName').value = product.name;
+                    document.getElementById('unitPrice').value = product.price;
+                    
+                    // Show modal
+                    const modal = new bootstrap.Modal(document.getElementById('addPurchaseModal'));
+                    modal.show();
+                } else {
+                    showScanResult(false, 'المنتج غير موجود أو تم حذفه');
+                }
+                
+                // Clear input
+                scanInput.value = '';
+                scanInput.focus();
+            }
+        }
+        
+        // Find product by barcode
+        function findProductByBarcode(barcode) {
+            return productsData.find(p => p.barcode === barcode);
+        }
+        
+        // Show scan result
+        function showScanResult(success, message) {
+            const resultElement = document.getElementById('scan-result');
+            const resultTextElement = document.getElementById('scan-result-text');
+            
+            resultElement.style.display = 'block';
+            resultElement.className = success ? 'scan-result success' : 'scan-result error';
+            resultTextElement.textContent = message;
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                resultElement.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Toggle barcode scanner
+        function toggleScanner() {
+            const scannerElement = document.getElementById('barcode-scanner');
+            
+            if (scannerElement.style.display === 'none' || !scannerElement.style.display) {
+                scannerElement.style.display = 'block';
+                initQuaggaScanner();
+            } else {
+                stopScanner();
+            }
+        }
+        
+        // Initialize Quagga barcode scanner
+        function initQuaggaScanner() {
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.getElementById('scanner-video'),
+                    constraints: {
+                        width: 640,
+                        height: 480,
+                        facingMode: "environment"
+                    }
+                },
+                decoder: {
+                    readers: [
+                        "code_128_reader",
+                        "ean_reader",
+                        "ean_8_reader",
+                        "code_39_reader",
+                        "code_39_vin_reader",
+                        "codabar_reader",
+                        "upc_reader",
+                        "upc_e_reader",
+                        "i2of5_reader"
+                    ],
+                    multiple: false
+                }
+            }, function(err) {
+                if (err) {
+                    console.error("Error initializing Quagga:", err);
+                    alert("لا يمكن الوصول إلى الكاميرا أو حدث خطأ في تهيئة الماسح الضوئي");
+                    stopScanner();
+                    return;
+                }
+                
+                console.log("Quagga initialized successfully");
+                Quagga.start();
+                
+                // Set scanner as active
+                quaggaScanner = true;
+            });
+            
+            // Listen for barcode detection
+            Quagga.onDetected(function(result) {
+                if (result && result.codeResult && result.codeResult.code) {
+                    const barcode = result.codeResult.code;
+                    console.log("Barcode detected:", barcode);
+                    
+                    // Stop scanner
+                    stopScanner();
+                    
+                    // Set barcode in input field
+                    document.getElementById('scanInput').value = barcode;
+                    
+                    // Process the scan
+                    scanProduct();
+                }
+            });
+        }
+        
+        // Stop Quagga scanner
+        function stopScanner() {
+            if (quaggaScanner) {
+                Quagga.stop();
+                quaggaScanner = false;
+            }
+            
+            document.getElementById('barcode-scanner').style.display = 'none';
+        }
+        
+        // Show supplier suggestions
+        function showSupplierSuggestions(query) {
+            const suggestionsElement = document.getElementById('supplierSuggestions');
+            
+            // Filter suppliers based on query
+            const filteredSuppliers = suppliersData.filter(supplier => 
+                supplier.name.toLowerCase().includes(query.toLowerCase())
+            );
+            
+            // Clear previous suggestions
+            suggestionsElement.innerHTML = '';
+            
+            if (filteredSuppliers.length > 0) {
+                // Add suggestions
+                filteredSuppliers.forEach(supplier => {
+                    const item = document.createElement('div');
+                    item.className = 'supplier-suggestion-item';
+                    item.textContent = supplier.name;
+                    item.addEventListener('click', function() {
+                        document.getElementById('supplier').value = supplier.name;
+                        suggestionsElement.style.display = 'none';
+                    });
+                    suggestionsElement.appendChild(item);
+                });
+                
+                // Show suggestions
+                suggestionsElement.style.display = 'block';
+            } else {
+                // Hide suggestions if no matches
+                suggestionsElement.style.display = 'none';
+            }
+        }
+        
+        // Add new supplier
+        function addNewSupplier() {
+            // Reset form
+            document.getElementById('addSupplierForm').reset();
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('addSupplierModal'));
+            modal.show();
+        }
+        
+        // Save new supplier
+        function saveNewSupplier() {
+            const name = document.getElementById('newSupplierName').value;
+            const phone = document.getElementById('supplierPhone').value;
+            const email = document.getElementById('supplierEmail').value;
+            const notes = document.getElementById('supplierNotes').value;
+            
+            // Validate name
+            if (!name) {
+                alert('يرجى إدخال اسم المورد');
+                return;
+            }
+            
+            // Check if supplier already exists
+            if (suppliersData.some(s => s.name === name)) {
+                alert('هذا المورد موجود بالفعل');
+                return;
+            }
+            
+            // Create new supplier
+            const newSupplier = {
+                id: suppliersData.length > 0 ? Math.max(...suppliersData.map(s => s.id)) + 1 : 1,
+                name,
+                phone,
+                email,
+                notes
+            };
+            
+            // Add to suppliers data
+            suppliersData.push(newSupplier);
+            
+            // Save to Firestore if available
+            if (typeof db !== 'undefined') {
+                const supplierId = newSupplier.id.toString();
+                const supplierData = { ...newSupplier };
+                delete supplierData.id; // Remove id from data to avoid duplication
+                
+                db.collection('suppliers').doc(supplierId).set(supplierData)
+                    .catch((error) => {
+                        console.error("Error adding supplier to Firestore:", error);
+                    });
+            }
+            
+            // Also save to localStorage as fallback
+            localStorage.setItem('suppliersData', JSON.stringify(suppliersData));
+            
+            // Update supplier filter
+            populateSupplierFilter();
+            
+            // Set supplier in purchase form
+            document.getElementById('supplier').value = name;
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addSupplierModal'));
+            modal.hide();
+            
+            // Show success message
+            alert('تمت إضافة المورد بنجاح');
+        }
+        
+        // Populate supplier filter
+        function populateSupplierFilter() {
+            const supplierFilter = document.getElementById('supplierFilter');
+            
+            // Save current selection
+            const currentSelection = supplierFilter.value;
+            
+            // Clear options except "All"
+            while (supplierFilter.options.length > 1) {
+                supplierFilter.remove(1);
+            }
+            
+            // Add supplier options
+            suppliersData.forEach(supplier => {
+                const option = document.createElement('option');
+                option.value = supplier.name;
+                option.textContent = supplier.name;
+                supplierFilter.appendChild(option);
+            });
+            
+            // Restore selection if possible
+            if (currentSelection !== 'all' && Array.from(supplierFilter.options).some(opt => opt.value === currentSelection)) {
+                supplierFilter.value = currentSelection;
+            }
+        }
+        
+        // Print purchases
+        function printPurchases() {
+            window.print();
+        }
+        
+        // Export purchases
+        function exportPurchases() {
+            const filteredPurchases = getFilteredPurchases();
+            const csvContent = [
+                ['#', 'اسم المنتج', 'المورد', 'الكمية', 'سعر الوحدة', 'الإجمالي', 'تاريخ الطلب', 'الحالة', 'ملاحظات'],
+                ...filteredPurchases.map(purchase => [
+                    purchase.id,
+                    purchase.productName,
+                    purchase.supplier,
+                    purchase.quantity,
+                    purchase.unitPrice + ' ريال',
+                    purchase.total + ' ريال',
+                    purchase.date,
+                    getStatusText(purchase.status),
+                    purchase.notes
+                ])
+            ];
+            
+            const csvString = csvContent.map(row => row.join(',')).join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `مشتريات_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Listen for product deletion events
+        window.addEventListener('productDeleted', function(e) {
+            const productId = e.detail.productId;
+            console.log('Product deleted event received in purchases page:', productId);
+            
+            // Remove purchases for this product
+            removeDeletedProductsFromPurchases();
+        });
+        
+        // Listen for invoice deletion events
+        window.addEventListener('invoiceDeleted', function(e) {
+            const invoiceId = e.detail.invoiceId;
+            console.log('Invoice deleted event received in purchases page:', invoiceId);
+            
+            // In a real implementation, this would update purchases related to the deleted invoice
+        });
+    </script>
+</body>
+</html>

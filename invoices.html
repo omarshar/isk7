@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الفواتير - اسكندويتش</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c1e5a;
+            --secondary-color: #e74c3c;
+            --accent-color: #3498db;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        .navbar {
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: white !important;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            margin: 0 10px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+            transform: translateY(-2px);
+        }
+        
+        .nav-link.active {
+            color: white !important;
+            border-bottom: 2px solid white;
+        }
+        
+        .page-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 15px 20px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 8px 20px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1e1645;
+            border-color: #1e1645;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            transition: all 0.3s;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            transition: all 0.3s;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #c82333;
+            transform: translateY(-2px);
+        }
+        
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+        
+        .table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .invoice-filters {
+            margin-bottom: 20px;
+        }
+        
+        .invoice-summary {
+            margin-bottom: 30px;
+        }
+        
+        .summary-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .summary-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .summary-label {
+            color: #6c757d;
+        }
+        
+        .invoice-details {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .invoice-id {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .invoice-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .status-paid {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-overdue {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .invoice-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .invoice-items {
+            margin-top: 20px;
+        }
+        
+        .invoice-total {
+            text-align: left;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 5px;
+        }
+        
+        .total-label {
+            width: 150px;
+            text-align: right;
+            margin-left: 20px;
+        }
+        
+        .total-value {
+            width: 150px;
+            text-align: left;
+        }
+        
+        .grand-total {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+        
+        .delete-confirm-modal .modal-header {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .delete-confirm-modal .modal-footer {
+            justify-content: space-between;
+        }
+        
+        /* New styles for product items */
+        .product-item {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .product-item:hover {
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .product-table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: normal;
+        }
+        
+        .product-table td {
+            vertical-align: middle;
+        }
+        
+        .remove-product-btn {
+            color: var(--secondary-color);
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+        
+        .remove-product-btn:hover {
+            color: #c0392b;
+            transform: scale(1.1);
+        }
+        
+        .add-product-btn {
+            background-color: #f8f9fa;
+            border: 1px dashed #ced4da;
+            color: var(--primary-color);
+            border-radius: 8px;
+            padding: 10px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        
+        .add-product-btn:hover {
+            background-color: #e9ecef;
+            border-color: var(--primary-color);
+        }
+        
+        .tax-switch {
+            margin-top: 10px;
+        }
+        
+        .tax-switch .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .tax-amount {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .subtotal-amount {
+            font-weight: bold;
+        }
+        
+        .total-amount {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-box-open me-2"></i>
+                اسكندويتش - نظام إدارة المخزون
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-home nav-icon"></i>الرئيسية
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="branches.html">
+                            <i class="fas fa-store nav-icon"></i>الفروع
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="products.html">
+                            <i class="fas fa-hamburger nav-icon"></i>المنتجات
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="inventory.html">
+                            <i class="fas fa-clipboard-list nav-icon"></i>جرد المخزون
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="waste.html">
+                            <i class="fas fa-trash nav-icon"></i>الويستات الشهرية
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="purchasesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-shopping-cart nav-icon"></i>المشتريات
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="purchasesDropdown">
+                            <li><a class="dropdown-item" href="purchases.html">المشتريات السريعة</a></li>
+                            <li><a class="dropdown-item" href="invoices.html">الفواتير</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="cost.html">
+                            <i class="fas fa-calculator nav-icon"></i>حساب التكلفة المباشرة
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h1 class="mb-2"><i class="fas fa-file-invoice-dollar me-2"></i> الفواتير</h1>
+                    <p class="lead">إدارة فواتير المشتريات وتتبع المدفوعات</p>
+                </div>
+                <div class="col-lg-4 text-lg-end d-flex align-items-center justify-content-lg-end">
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addInvoiceModal">
+                        <i class="fas fa-plus-circle me-2"></i>إضافة فاتورة جديدة
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <section class="container">
+        <!-- Invoice Filters -->
+        <div class="row invoice-filters">
+            <div class="col-md-3 mb-3">
+                <label for="supplierFilter" class="form-label">المورد</label>
+                <select class="form-select" id="supplierFilter" onchange="applyFilters()">
+                    <option value="all">جميع الموردين</option>
+                    <option value="1">شركة الغذاء الطازج</option>
+                    <option value="2">مؤسسة الخير للتوريدات</option>
+                    <option value="3">مصنع المشروبات الوطني</option>
+                </select>
+            </div>
+            <div class="col-md-3 mb-3">
+                <label for="statusFilter" class="form-label">الحالة</label>
+                <select class="form-select" id="statusFilter" onchange="applyFilters()">
+                    <option value="all">جميع الحالات</option>
+                    <option value="paid">مدفوعة</option>
+                    <option value="pending">قيد الانتظار</option>
+                    <option value="overdue">متأخرة</option>
+                </select>
+            </div>
+            <div class="col-md-3 mb-3">
+                <label for="dateFromFilter" class="form-label">من تاريخ</label>
+                <input type="date" class="form-control" id="dateFromFilter" value="2025-05-01" onchange="applyFilters()">
+            </div>
+            <div class="col-md-3 mb-3">
+                <label for="dateToFilter" class="form-label">إلى تاريخ</label>
+                <input type="date" class="form-control" id="dateToFilter" value="2025-05-18" onchange="applyFilters()">
+            </div>
+        </div>
+
+        <!-- Invoice Summary -->
+        <div class="row invoice-summary">
+            <div class="col-md-3 mb-3">
+                <div class="summary-card">
+                    <i class="fas fa-file-invoice summary-icon"></i>
+                    <div class="summary-value" id="totalInvoices">12</div>
+                    <div class="summary-label">إجمالي الفواتير</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="summary-card">
+                    <i class="fas fa-money-bill-wave summary-icon"></i>
+                    <div class="summary-value" id="totalPaid">8,500.00 ريال</div>
+                    <div class="summary-label">إجمالي المدفوعات</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="summary-card">
+                    <i class="fas fa-clock summary-icon"></i>
+                    <div class="summary-value" id="totalPending">2,150.00 ريال</div>
+                    <div class="summary-label">قيد الانتظار</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="summary-card">
+                    <i class="fas fa-exclamation-circle summary-icon"></i>
+                    <div class="summary-value" id="totalOverdue">850.00 ريال</div>
+                    <div class="summary-label">متأخرة</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoices Table -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">قائمة الفواتير</h5>
+                <div>
+                    <button class="btn btn-sm btn-outline-light me-2" onclick="printInvoices()">
+                        <i class="fas fa-print me-1"></i> طباعة
+                    </button>
+                    <button class="btn btn-sm btn-outline-light" onclick="exportInvoices()">
+                        <i class="fas fa-file-export me-1"></i> تصدير
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>رقم الفاتورة</th>
+                                <th>التاريخ</th>
+                                <th>المورد</th>
+                                <th>اسم المورد</th>
+                                <th>عدد المنتجات</th>
+                                <th>المبلغ</th>
+                                <th>الضريبة</th>
+                                <th>الإجمالي</th>
+                                <th>تاريخ الاستحقاق</th>
+                                <th>الحالة</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoicesTableBody">
+                            <!-- Table content will be dynamically generated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add Invoice Modal -->
+    <div class="modal fade" id="addInvoiceModal" tabindex="-1" aria-labelledby="addInvoiceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="addInvoiceModalLabel">إضافة فاتورة جديدة</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addInvoiceForm">
+                        <!-- Invoice Header Information -->
+                        <div class="row mb-4">
+                            <div class="col-md-3 mb-3">
+                                <label for="invoiceNumber" class="form-label">رقم الفاتورة</label>
+                                <input type="text" class="form-control" id="invoiceNumber" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="invoiceDate" class="form-label">تاريخ الفاتورة</label>
+                                <input type="date" class="form-control" id="invoiceDate" value="2025-05-18" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="invoiceSupplier" class="form-label">المورد</label>
+                                <select class="form-select" id="invoiceSupplier" required>
+                                    <option value="">اختر المورد</option>
+                                    <option value="شركة الغذاء الطازج">شركة الغذاء الطازج</option>
+                                    <option value="مؤسسة الخير للتوريدات">مؤسسة الخير للتوريدات</option>
+                                    <option value="مصنع المشروبات الوطني">مصنع المشروبات الوطني</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="invoiceDueDate" class="form-label">تاريخ الاستحقاق</label>
+                                <input type="date" class="form-control" id="invoiceDueDate" value="2025-06-01" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label for="invoiceSupplierName" class="form-label">اسم المورد</label>
+                                <input type="text" class="form-control" id="invoiceSupplierName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="invoiceStatus" class="form-label">الحالة</label>
+                                <select class="form-select" id="invoiceStatus" required>
+                                    <option value="paid">مدفوعة</option>
+                                    <option value="pending">قيد الانتظار</option>
+                                    <option value="overdue">متأخرة</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Products Section -->
+                        <h5 class="mb-3 mt-4 border-bottom pb-2">
+                            <i class="fas fa-shopping-basket me-2"></i>المنتجات
+                        </h5>
+                        
+                        <div class="table-responsive mb-3">
+                            <table class="table table-bordered product-table" id="productsTable">
+                                <thead>
+                                    <tr>
+                                        <th width="12%">رقم الصنف</th>
+                                        <th width="12%">SKU</th>
+                                        <th width="21%">النوع</th>
+                                        <th width="12%">الكمية</th>
+                                        <th width="12%">وحدة القياس</th>
+                                        <th width="12%">السعر</th>
+                                        <th width="12%">الإجمالي</th>
+                                        <th width="7%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productItemsContainer">
+                                    <!-- Product rows will be added here -->
+                                    <tr class="product-row">
+                                        <td>
+                                            <input type="text" class="form-control product-code" placeholder="رقم الصنف" required>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control product-sku" placeholder="SKU">
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control product-type" placeholder="نوع المنتج" required>
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control product-quantity" min="1" value="1" onchange="calculateProductTotal(this)" required>
+                                        </td>
+                                        <td>
+                                            <select class="form-select product-unit" required>
+                                                <option value="كيلو">كيلو</option>
+                                                <option value="جرام">جرام</option>
+                                                <option value="لتر">لتر</option>
+                                                <option value="حبة">حبة</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control product-price" min="0" step="0.01" value="0.00" onchange="calculateProductTotal(this)" required>
+                                                <span class="input-group-text">ريال</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control product-total" value="0.00" readonly>
+                                                <span class="input-group-text">ريال</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <button type="button" class="remove-product-btn" onclick="removeProductRow(this)">
+                                                <i class="fas fa-times-circle"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <button type="button" class="add-product-btn" onclick="addProductRow()">
+                                    <i class="fas fa-plus-circle me-2"></i>إضافة منتج جديد
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Invoice Totals -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="invoiceNotes" class="form-label">ملاحظات</label>
+                                    <textarea class="form-control" id="invoiceNotes" rows="3"></textarea>
+                                </div>
+                                
+                                <!-- Tax Option -->
+                                <div class="form-check form-switch tax-switch">
+                                    <input class="form-check-input" type="checkbox" id="taxEnabled" onchange="calculateInvoiceTotals()">
+                                    <label class="form-check-label" for="taxEnabled">تطبيق ضريبة القيمة المضافة (15%)</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title mb-3">ملخص الفاتورة</h5>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>إجمالي المنتجات:</span>
+                                            <span class="subtotal-amount" id="invoiceSubtotal">0.00 ريال</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>ضريبة القيمة المضافة (15%):</span>
+                                            <span class="tax-amount" id="invoiceTax">0.00 ريال</span>
+                                        </div>
+                                        <hr>
+                                        <div class="d-flex justify-content-between">
+                                            <span>الإجمالي النهائي:</span>
+                                            <span class="total-amount" id="invoiceTotal">0.00 ريال</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" onclick="addInvoice()">إضافة الفاتورة</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade delete-confirm-modal" id="deleteInvoiceModal" tabindex="-1" aria-labelledby="deleteInvoiceModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteInvoiceModalLabel">تأكيد الحذف</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>هل أنت متأكد من رغبتك في حذف الفاتورة رقم <span id="deleteInvoiceNumber"></span>؟</p>
+                    <p class="text-danger">هذا الإجراء لا يمكن التراجع عنه.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">حذف</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Invoice Modal -->
+    <div class="modal fade" id="viewInvoiceModal" tabindex="-1" aria-labelledby="viewInvoiceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="viewInvoiceModalLabel">تفاصيل الفاتورة</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="viewInvoiceContent">
+                    <!-- Invoice details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                    <button type="button" class="btn btn-primary" onclick="printInvoiceDetails()">
+                        <i class="fas fa-print me-2"></i>طباعة
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer text-center">
+        <div class="container">
+            <p class="mb-0">© 2025 اسكندويتش - نظام إدارة المخزون. جميع الحقوق محفوظة.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables
+        let invoicesData = [];
+        
+        // Load data from localStorage or initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadInvoicesData();
+            
+            // Set up delete confirmation modal
+            const deleteInvoiceModal = document.getElementById('deleteInvoiceModal');
+            deleteInvoiceModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const invoiceId = button.getAttribute('data-invoice-id');
+                document.getElementById('deleteInvoiceNumber').textContent = invoiceId;
+                document.getElementById('confirmDeleteBtn').setAttribute('data-invoice-id', invoiceId);
+            });
+            
+            document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+                const invoiceId = this.getAttribute('data-invoice-id');
+                deleteInvoiceConfirmed(invoiceId);
+            });
+        });
+        
+        // Load invoices data from localStorage
+        function loadInvoicesData() {
+            const storedData = localStorage.getItem('invoicesData');
+            if (storedData) {
+                invoicesData = JSON.parse(storedData);
+            } else {
+                // Initialize with sample data if not exists
+                invoicesData = [
+                    {
+                        id: "INV-2025-001",
+                        date: "10/05/2025",
+                        supplier: "شركة الغذاء الطازج",
+                        supplierName: "محمد أحمد",
+                        amount: 3250.00,
+                        dueDate: "25/05/2025",
+                        status: "paid",
+                        notes: "فاتورة توريد مواد غذائية",
+                        taxEnabled: true,
+                        taxAmount: 487.50,
+                        totalAmount: 3737.50,
+                        products: [
+                            {
+                                code: "P001",
+                                sku: "FL-WHT-50K",
+                                type: "دقيق",
+                                quantity: 50,
+                                unit: "كيلو",
+                                price: 25.00,
+                                total: 1250.00
+                            },
+                            {
+                                code: "P002",
+                                sku: "SG-WHT-40K",
+                                type: "سكر",
+                                quantity: 40,
+                                unit: "كيلو",
+                                price: 20.00,
+                                total: 800.00
+                            },
+                            {
+                                code: "P003",
+                                sku: "OIL-VG-30L",
+                                type: "زيت",
+                                quantity: 30,
+                                unit: "لتر",
+                                price: 40.00,
+                                total: 1200.00
+                            }
+                        ]
+                    },
+                    {
+                        id: "INV-2025-002",
+                        date: "12/05/2025",
+                        supplier: "مؤسسة الخير للتوريدات",
+                        supplierName: "خالد محمود",
+                        amount: 1850.00,
+                        dueDate: "27/05/2025",
+                        status: "paid",
+                        notes: "فاتورة توريد مستلزمات",
+                        taxEnabled: false,
+                        taxAmount: 0,
+                        totalAmount: 1850.00,
+                        products: [
+                            {
+                                code: "P004",
+                                sku: "BOX-PKG-100",
+                                type: "صناديق تغليف",
+                                quantity: 100,
+                                unit: "حبة",
+                                price: 10.50,
+                                total: 1050.00
+                            },
+                            {
+                                code: "P005",
+                                sku: "BAG-PPR-200",
+                                type: "أكياس ورقية",
+                                quantity: 200,
+                                unit: "حبة",
+                                price: 4.00,
+                                total: 800.00
+                            }
+                        ]
+                    },
+                    {
+                        id: "INV-2025-003",
+                        date: "14/05/2025",
+                        supplier: "مصنع المشروبات الوطني",
+                        supplierName: "أحمد علي",
+                        amount: 2150.00,
+                        dueDate: "29/05/2025",
+                        status: "pending",
+                        notes: "فاتورة توريد مشروبات",
+                        taxEnabled: true,
+                        taxAmount: 322.50,
+                        totalAmount: 2472.50,
+                        products: [
+                            {
+                                code: "P006",
+                                sku: "WTR-MNR-100",
+                                type: "مياه معدنية",
+                                quantity: 100,
+                                unit: "حبة",
+                                price: 8.50,
+                                total: 850.00
+                            },
+                            {
+                                code: "P007",
+                                sku: "JCE-MIX-50",
+                                type: "عصائر متنوعة",
+                                quantity: 50,
+                                unit: "حبة",
+                                price: 12.00,
+                                total: 600.00
+                            },
+                            {
+                                code: "P008",
+                                sku: "SDR-CRB-70",
+                                type: "مشروبات غازية",
+                                quantity: 70,
+                                unit: "حبة",
+                                price: 10.00,
+                                total: 700.00
+                            }
+                        ]
+                    }
+                ];
+                saveInvoicesData();
+            }
+            
+            renderInvoicesTable();
+            updateSummary();
+        }
+        
+        // Save invoices data to localStorage
+        function saveInvoicesData() {
+            localStorage.setItem('invoicesData', JSON.stringify(invoicesData));
+        }
+        
+        // Render invoices table
+        function renderInvoicesTable() {
+            const tableBody = document.getElementById('invoicesTableBody');
+            tableBody.innerHTML = '';
+            
+            invoicesData.forEach(invoice => {
+                const row = document.createElement('tr');
+                
+                // Format status badge
+                let statusBadge = '';
+                if (invoice.status === 'paid') {
+                    statusBadge = '<span class="badge bg-success">مدفوعة</span>';
+                } else if (invoice.status === 'pending') {
+                    statusBadge = '<span class="badge bg-warning text-dark">قيد الانتظار</span>';
+                } else if (invoice.status === 'overdue') {
+                    statusBadge = '<span class="badge bg-danger">متأخرة</span>';
+                }
+                
+                row.innerHTML = `
+                    <td>${invoice.id}</td>
+                    <td>${invoice.date}</td>
+                    <td>${invoice.supplier}</td>
+                    <td>${invoice.supplierName}</td>
+                    <td>${invoice.products ? invoice.products.length : 0}</td>
+                    <td>${invoice.amount.toFixed(2)} ريال</td>
+                    <td>${invoice.taxAmount ? invoice.taxAmount.toFixed(2) : '0.00'} ريال</td>
+                    <td>${invoice.totalAmount ? invoice.totalAmount.toFixed(2) : invoice.amount.toFixed(2)} ريال</td>
+                    <td>${invoice.dueDate}</td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary me-1" onclick="viewInvoice('${invoice.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteInvoiceModal" data-invoice-id="${invoice.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // Update summary cards
+        function updateSummary() {
+            const totalInvoices = invoicesData.length;
+            
+            let totalPaid = 0;
+            let totalPending = 0;
+            let totalOverdue = 0;
+            
+            invoicesData.forEach(invoice => {
+                const amount = invoice.totalAmount || invoice.amount;
+                
+                if (invoice.status === 'paid') {
+                    totalPaid += amount;
+                } else if (invoice.status === 'pending') {
+                    totalPending += amount;
+                } else if (invoice.status === 'overdue') {
+                    totalOverdue += amount;
+                }
+            });
+            
+            document.getElementById('totalInvoices').textContent = totalInvoices;
+            document.getElementById('totalPaid').textContent = totalPaid.toFixed(2) + ' ريال';
+            document.getElementById('totalPending').textContent = totalPending.toFixed(2) + ' ريال';
+            document.getElementById('totalOverdue').textContent = totalOverdue.toFixed(2) + ' ريال';
+        }
+        
+        // Add new product row
+        function addProductRow() {
+            const productItemsContainer = document.getElementById('productItemsContainer');
+            const newRow = document.createElement('tr');
+            newRow.className = 'product-row';
+            
+            newRow.innerHTML = `
+                <td>
+                    <input type="text" class="form-control product-code" placeholder="رقم الصنف" required>
+                </td>
+                <td>
+                    <input type="text" class="form-control product-sku" placeholder="SKU">
+                </td>
+                <td>
+                    <input type="text" class="form-control product-type" placeholder="نوع المنتج" required>
+                </td>
+                <td>
+                    <input type="number" class="form-control product-quantity" min="1" value="1" onchange="calculateProductTotal(this)" required>
+                </td>
+                <td>
+                    <select class="form-select product-unit" required>
+                        <option value="كيلو">كيلو</option>
+                        <option value="جرام">جرام</option>
+                        <option value="لتر">لتر</option>
+                        <option value="حبة">حبة</option>
+                    </select>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <input type="number" class="form-control product-price" min="0" step="0.01" value="0.00" onchange="calculateProductTotal(this)" required>
+                        <span class="input-group-text">ريال</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <input type="text" class="form-control product-total" value="0.00" readonly>
+                        <span class="input-group-text">ريال</span>
+                    </div>
+                </td>
+                <td class="text-center">
+                    <button type="button" class="remove-product-btn" onclick="removeProductRow(this)">
+                        <i class="fas fa-times-circle"></i>
+                    </button>
+                </td>
+            `;
+            
+            productItemsContainer.appendChild(newRow);
+        }
+        
+        // Remove product row
+        function removeProductRow(button) {
+            const productRows = document.querySelectorAll('.product-row');
+            
+            // Don't remove if it's the only row
+            if (productRows.length > 1) {
+                const row = button.closest('tr');
+                row.remove();
+                calculateInvoiceTotals();
+            } else {
+                alert('يجب أن تحتوي الفاتورة على منتج واحد على الأقل');
+            }
+        }
+        
+        // Calculate product total
+        function calculateProductTotal(input) {
+            const row = input.closest('tr');
+            const quantity = parseFloat(row.querySelector('.product-quantity').value) || 0;
+            const price = parseFloat(row.querySelector('.product-price').value) || 0;
+            const total = quantity * price;
+            
+            row.querySelector('.product-total').value = total.toFixed(2);
+            
+            calculateInvoiceTotals();
+        }
+        
+        // Calculate invoice totals
+        function calculateInvoiceTotals() {
+            let subtotal = 0;
+            
+            // Sum all product totals
+            document.querySelectorAll('.product-total').forEach(input => {
+                subtotal += parseFloat(input.value) || 0;
+            });
+            
+            // Calculate tax if enabled
+            const taxEnabled = document.getElementById('taxEnabled').checked;
+            const taxRate = 0.15; // 15%
+            const taxAmount = taxEnabled ? subtotal * taxRate : 0;
+            const total = subtotal + taxAmount;
+            
+            // Update summary
+            document.getElementById('invoiceSubtotal').textContent = subtotal.toFixed(2) + ' ريال';
+            document.getElementById('invoiceTax').textContent = taxAmount.toFixed(2) + ' ريال';
+            document.getElementById('invoiceTotal').textContent = total.toFixed(2) + ' ريال';
+        }
+        
+        // Add new invoice
+        function addInvoice() {
+            // Validate form
+            const form = document.getElementById('addInvoiceForm');
+            if (!validateInvoiceForm()) {
+                return;
+            }
+            
+            // Collect products data
+            const products = [];
+            document.querySelectorAll('.product-row').forEach(row => {
+                products.push({
+                    code: row.querySelector('.product-code').value,
+                    sku: row.querySelector('.product-sku').value || '',
+                    type: row.querySelector('.product-type').value,
+                    quantity: parseFloat(row.querySelector('.product-quantity').value),
+                    unit: row.querySelector('.product-unit').value,
+                    price: parseFloat(row.querySelector('.product-price').value),
+                    total: parseFloat(row.querySelector('.product-total').value)
+                });
+            });
+            
+            // Calculate totals
+            let subtotal = 0;
+            products.forEach(product => {
+                subtotal += product.total;
+            });
+            
+            const taxEnabled = document.getElementById('taxEnabled').checked;
+            const taxRate = 0.15; // 15%
+            const taxAmount = taxEnabled ? subtotal * taxRate : 0;
+            const totalAmount = subtotal + taxAmount;
+            
+            // Create new invoice object
+            const newInvoice = {
+                id: document.getElementById('invoiceNumber').value,
+                date: formatDate(document.getElementById('invoiceDate').value),
+                supplier: document.getElementById('invoiceSupplier').value,
+                supplierName: document.getElementById('invoiceSupplierName').value,
+                amount: subtotal,
+                dueDate: formatDate(document.getElementById('invoiceDueDate').value),
+                status: document.getElementById('invoiceStatus').value,
+                notes: document.getElementById('invoiceNotes').value,
+                taxEnabled: taxEnabled,
+                taxAmount: taxAmount,
+                totalAmount: totalAmount,
+                products: products
+            };
+            
+            // Add to invoices data
+            invoicesData.push(newInvoice);
+            
+            // Save and update UI
+            saveInvoicesData();
+            renderInvoicesTable();
+            updateSummary();
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addInvoiceModal'));
+            modal.hide();
+            
+            // Reset form
+            resetInvoiceForm();
+            
+            // Show success message
+            alert('تمت إضافة الفاتورة بنجاح');
+        }
+        
+        // Validate invoice form
+        function validateInvoiceForm() {
+            // Basic validation
+            const requiredFields = [
+                'invoiceNumber',
+                'invoiceDate',
+                'invoiceSupplier',
+                'invoiceDueDate',
+                'invoiceSupplierName',
+                'invoiceStatus'
+            ];
+            
+            for (const field of requiredFields) {
+                const element = document.getElementById(field);
+                if (!element.value) {
+                    alert('يرجى ملء جميع الحقول المطلوبة');
+                    element.focus();
+                    return false;
+                }
+            }
+            
+            // Validate products
+            const productRows = document.querySelectorAll('.product-row');
+            for (const row of productRows) {
+                const code = row.querySelector('.product-code').value;
+                const type = row.querySelector('.product-type').value;
+                const quantity = row.querySelector('.product-quantity').value;
+                const price = row.querySelector('.product-price').value;
+                
+                if (!code || !type || !quantity || !price) {
+                    alert('يرجى ملء جميع بيانات المنتجات');
+                    return false;
+                }
+            }
+            
+            // Check for duplicate invoice number
+            const invoiceNumber = document.getElementById('invoiceNumber').value;
+            const duplicate = invoicesData.find(invoice => invoice.id === invoiceNumber);
+            if (duplicate) {
+                alert('رقم الفاتورة موجود بالفعل، يرجى استخدام رقم آخر');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Reset invoice form
+        function resetInvoiceForm() {
+            document.getElementById('addInvoiceForm').reset();
+            
+            // Reset product rows
+            const productItemsContainer = document.getElementById('productItemsContainer');
+            productItemsContainer.innerHTML = `
+                <tr class="product-row">
+                    <td>
+                        <input type="text" class="form-control product-code" placeholder="رقم الصنف" required>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control product-sku" placeholder="SKU">
+                    </td>
+                    <td>
+                        <input type="text" class="form-control product-type" placeholder="نوع المنتج" required>
+                    </td>
+                    <td>
+                        <input type="number" class="form-control product-quantity" min="1" value="1" onchange="calculateProductTotal(this)" required>
+                    </td>
+                    <td>
+                        <select class="form-select product-unit" required>
+                            <option value="كيلو">كيلو</option>
+                            <option value="جرام">جرام</option>
+                            <option value="لتر">لتر</option>
+                            <option value="حبة">حبة</option>
+                        </select>
+                    </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="number" class="form-control product-price" min="0" step="0.01" value="0.00" onchange="calculateProductTotal(this)" required>
+                            <span class="input-group-text">ريال</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" class="form-control product-total" value="0.00" readonly>
+                            <span class="input-group-text">ريال</span>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="remove-product-btn" onclick="removeProductRow(this)">
+                            <i class="fas fa-times-circle"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+            
+            // Reset totals
+            document.getElementById('invoiceSubtotal').textContent = '0.00 ريال';
+            document.getElementById('invoiceTax').textContent = '0.00 ريال';
+            document.getElementById('invoiceTotal').textContent = '0.00 ريال';
+            
+            // Set current date
+            document.getElementById('invoiceDate').valueAsDate = new Date();
+            
+            // Set due date (30 days from now)
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 30);
+            document.getElementById('invoiceDueDate').valueAsDate = dueDate;
+        }
+        
+        // Delete invoice
+        function deleteInvoiceConfirmed(invoiceId) {
+            // Find invoice index
+            const index = invoicesData.findIndex(invoice => invoice.id === invoiceId);
+            
+            if (index !== -1) {
+                // Remove from array
+                invoicesData.splice(index, 1);
+                
+                // Save and update UI
+                saveInvoicesData();
+                renderInvoicesTable();
+                updateSummary();
+                
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('deleteInvoiceModal'));
+                modal.hide();
+                
+                // Show success message
+                alert('تم حذف الفاتورة بنجاح');
+            }
+        }
+        
+        // View invoice details
+        function viewInvoice(invoiceId) {
+            const invoice = invoicesData.find(inv => inv.id === invoiceId);
+            
+            if (!invoice) {
+                return;
+            }
+            
+            // Format status badge
+            let statusBadge = '';
+            if (invoice.status === 'paid') {
+                statusBadge = '<span class="badge bg-success">مدفوعة</span>';
+            } else if (invoice.status === 'pending') {
+                statusBadge = '<span class="badge bg-warning text-dark">قيد الانتظار</span>';
+            } else if (invoice.status === 'overdue') {
+                statusBadge = '<span class="badge bg-danger">متأخرة</span>';
+            }
+            
+            // Generate products table
+            let productsHtml = '';
+            if (invoice.products && invoice.products.length > 0) {
+                productsHtml = `
+                    <div class="table-responsive mt-4">
+                        <table class="table table-bordered">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>رقم الصنف</th>
+                                    <th>SKU</th>
+                                    <th>النوع</th>
+                                    <th>الكمية</th>
+                                    <th>وحدة القياس</th>
+                                    <th>السعر</th>
+                                    <th>الإجمالي</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                invoice.products.forEach(product => {
+                    productsHtml += `
+                        <tr>
+                            <td>${product.code}</td>
+                            <td>${product.sku || '-'}</td>
+                            <td>${product.type}</td>
+                            <td>${product.quantity}</td>
+                            <td>${product.unit}</td>
+                            <td>${product.price.toFixed(2)} ريال</td>
+                            <td>${product.total.toFixed(2)} ريال</td>
+                        </tr>
+                    `;
+                });
+                
+                productsHtml += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            
+            // Generate invoice details HTML
+            const detailsHtml = `
+                <div class="invoice-details">
+                    <div class="invoice-header">
+                        <div>
+                            <div class="invoice-id">${invoice.id}</div>
+                            <div class="text-muted">تاريخ الفاتورة: ${invoice.date}</div>
+                        </div>
+                        <div>
+                            <div class="invoice-status ${invoice.status}">${statusBadge}</div>
+                            <div class="text-muted">تاريخ الاستحقاق: ${invoice.dueDate}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="mb-2">بيانات المورد:</h6>
+                            <p class="mb-1"><strong>المورد:</strong> ${invoice.supplier}</p>
+                            <p><strong>اسم المورد:</strong> ${invoice.supplierName}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="mb-2">ملاحظات:</h6>
+                            <p>${invoice.notes || 'لا توجد ملاحظات'}</p>
+                        </div>
+                    </div>
+                    
+                    <h5 class="mt-4 mb-3">المنتجات</h5>
+                    ${productsHtml}
+                    
+                    <div class="invoice-total">
+                        <div class="total-row">
+                            <div class="total-label">إجمالي المنتجات:</div>
+                            <div class="total-value">${invoice.amount.toFixed(2)} ريال</div>
+                        </div>
+                        <div class="total-row">
+                            <div class="total-label">ضريبة القيمة المضافة (15%):</div>
+                            <div class="total-value">${invoice.taxAmount ? invoice.taxAmount.toFixed(2) : '0.00'} ريال</div>
+                        </div>
+                        <div class="total-row grand-total">
+                            <div class="total-label">الإجمالي النهائي:</div>
+                            <div class="total-value">${invoice.totalAmount ? invoice.totalAmount.toFixed(2) : invoice.amount.toFixed(2)} ريال</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Set content and show modal
+            document.getElementById('viewInvoiceContent').innerHTML = detailsHtml;
+            const viewModal = new bootstrap.Modal(document.getElementById('viewInvoiceModal'));
+            viewModal.show();
+        }
+        
+        // Apply filters
+        function applyFilters() {
+            // Get filter values
+            const supplierFilter = document.getElementById('supplierFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const dateFromFilter = document.getElementById('dateFromFilter').value;
+            const dateToFilter = document.getElementById('dateToFilter').value;
+            
+            // Convert dates to timestamps for comparison
+            const dateFrom = dateFromFilter ? new Date(dateFromFilter).getTime() : 0;
+            const dateTo = dateToFilter ? new Date(dateToFilter).getTime() : Infinity;
+            
+            // Filter invoices
+            const filteredInvoices = invoicesData.filter(invoice => {
+                // Parse invoice date (format: DD/MM/YYYY)
+                const dateParts = invoice.date.split('/');
+                const invoiceDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]).getTime();
+                
+                // Apply supplier filter
+                if (supplierFilter !== 'all') {
+                    if (supplierFilter === '1' && invoice.supplier !== 'شركة الغذاء الطازج') return false;
+                    if (supplierFilter === '2' && invoice.supplier !== 'مؤسسة الخير للتوريدات') return false;
+                    if (supplierFilter === '3' && invoice.supplier !== 'مصنع المشروبات الوطني') return false;
+                }
+                
+                // Apply status filter
+                if (statusFilter !== 'all' && invoice.status !== statusFilter) return false;
+                
+                // Apply date filter
+                if (invoiceDate < dateFrom || invoiceDate > dateTo) return false;
+                
+                return true;
+            });
+            
+            // Render filtered invoices
+            const tableBody = document.getElementById('invoicesTableBody');
+            tableBody.innerHTML = '';
+            
+            if (filteredInvoices.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="11" class="text-center">لا توجد فواتير تطابق معايير البحث</td>';
+                tableBody.appendChild(row);
+                return;
+            }
+            
+            filteredInvoices.forEach(invoice => {
+                const row = document.createElement('tr');
+                
+                // Format status badge
+                let statusBadge = '';
+                if (invoice.status === 'paid') {
+                    statusBadge = '<span class="badge bg-success">مدفوعة</span>';
+                } else if (invoice.status === 'pending') {
+                    statusBadge = '<span class="badge bg-warning text-dark">قيد الانتظار</span>';
+                } else if (invoice.status === 'overdue') {
+                    statusBadge = '<span class="badge bg-danger">متأخرة</span>';
+                }
+                
+                row.innerHTML = `
+                    <td>${invoice.id}</td>
+                    <td>${invoice.date}</td>
+                    <td>${invoice.supplier}</td>
+                    <td>${invoice.supplierName}</td>
+                    <td>${invoice.products ? invoice.products.length : 0}</td>
+                    <td>${invoice.amount.toFixed(2)} ريال</td>
+                    <td>${invoice.taxAmount ? invoice.taxAmount.toFixed(2) : '0.00'} ريال</td>
+                    <td>${invoice.totalAmount ? invoice.totalAmount.toFixed(2) : invoice.amount.toFixed(2)} ريال</td>
+                    <td>${invoice.dueDate}</td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary me-1" onclick="viewInvoice('${invoice.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteInvoiceModal" data-invoice-id="${invoice.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // Print invoices
+        function printInvoices() {
+            const printWindow = window.open('', '_blank');
+            
+            // Generate print content
+            let printContent = `
+                <!DOCTYPE html>
+                <html lang="ar" dir="rtl">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>طباعة الفواتير</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            margin: 20px;
+                        }
+                        h1 {
+                            text-align: center;
+                            margin-bottom: 20px;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-bottom: 20px;
+                        }
+                        th, td {
+                            border: 1px solid #ddd;
+                            padding: 8px;
+                            text-align: right;
+                        }
+                        th {
+                            background-color: #f2f2f2;
+                        }
+                        .print-header {
+                            display: flex;
+                            justify-content: space-between;
+                            margin-bottom: 20px;
+                        }
+                        .print-date {
+                            text-align: left;
+                        }
+                        .status-paid {
+                            color: green;
+                        }
+                        .status-pending {
+                            color: orange;
+                        }
+                        .status-overdue {
+                            color: red;
+                        }
+                        @media print {
+                            .no-print {
+                                display: none;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="print-header">
+                        <h1>قائمة الفواتير - اسكندويتش</h1>
+                        <div class="print-date">تاريخ الطباعة: ${new Date().toLocaleDateString('ar-SA')}</div>
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>رقم الفاتورة</th>
+                                <th>التاريخ</th>
+                                <th>المورد</th>
+                                <th>اسم المورد</th>
+                                <th>عدد المنتجات</th>
+                                <th>المبلغ</th>
+                                <th>الضريبة</th>
+                                <th>الإجمالي</th>
+                                <th>تاريخ الاستحقاق</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            // Add invoice rows
+            invoicesData.forEach(invoice => {
+                let statusText = '';
+                let statusClass = '';
+                
+                if (invoice.status === 'paid') {
+                    statusText = 'مدفوعة';
+                    statusClass = 'status-paid';
+                } else if (invoice.status === 'pending') {
+                    statusText = 'قيد الانتظار';
+                    statusClass = 'status-pending';
+                } else if (invoice.status === 'overdue') {
+                    statusText = 'متأخرة';
+                    statusClass = 'status-overdue';
+                }
+                
+                printContent += `
+                    <tr>
+                        <td>${invoice.id}</td>
+                        <td>${invoice.date}</td>
+                        <td>${invoice.supplier}</td>
+                        <td>${invoice.supplierName}</td>
+                        <td>${invoice.products ? invoice.products.length : 0}</td>
+                        <td>${invoice.amount.toFixed(2)} ريال</td>
+                        <td>${invoice.taxAmount ? invoice.taxAmount.toFixed(2) : '0.00'} ريال</td>
+                        <td>${invoice.totalAmount ? invoice.totalAmount.toFixed(2) : invoice.amount.toFixed(2)} ريال</td>
+                        <td>${invoice.dueDate}</td>
+                        <td class="${statusClass}">${statusText}</td>
+                    </tr>
+                `;
+            });
+            
+            printContent += `
+                        </tbody>
+                    </table>
+                    
+                    <div class="no-print">
+                        <button onclick="window.print()">طباعة</button>
+                        <button onclick="window.close()">إغلاق</button>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            printWindow.document.open();
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+        }
+        
+        // Print invoice details
+        function printInvoiceDetails() {
+            window.print();
+        }
+        
+        // Export invoices to CSV
+        function exportInvoices() {
+            // Prepare CSV content
+            let csvContent = 'رقم الفاتورة,التاريخ,المورد,اسم المورد,عدد المنتجات,المبلغ,الضريبة,الإجمالي,تاريخ الاستحقاق,الحالة\n';
+            
+            invoicesData.forEach(invoice => {
+                let statusText = '';
+                
+                if (invoice.status === 'paid') {
+                    statusText = 'مدفوعة';
+                } else if (invoice.status === 'pending') {
+                    statusText = 'قيد الانتظار';
+                } else if (invoice.status === 'overdue') {
+                    statusText = 'متأخرة';
+                }
+                
+                csvContent += `${invoice.id},${invoice.date},${invoice.supplier},${invoice.supplierName},${invoice.products ? invoice.products.length : 0},${invoice.amount.toFixed(2)},${invoice.taxAmount ? invoice.taxAmount.toFixed(2) : '0.00'},${invoice.totalAmount ? invoice.totalAmount.toFixed(2) : invoice.amount.toFixed(2)},${invoice.dueDate},${statusText}\n`;
+            });
+            
+            // Create download link
+            const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', 'فواتير_اسكندويتش.csv');
+            document.body.appendChild(link);
+            
+            // Trigger download
+            link.click();
+            
+            // Clean up
+            document.body.removeChild(link);
+        }
+        
+        // Helper function to format date (YYYY-MM-DD to DD/MM/YYYY)
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            
+            return `${day}/${month}/${year}`;
+        }
+    </script>
+</body>
+</html>

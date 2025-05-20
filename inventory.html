@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جرد المخزون - اسكندويتش</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c1e5a;
+            --secondary-color: #e74c3c;
+            --accent-color: #3498db;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        .navbar {
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: white !important;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            margin: 0 10px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+            transform: translateY(-2px);
+        }
+        
+        .nav-link.active {
+            color: white !important;
+            border-bottom: 2px solid white;
+        }
+        
+        .page-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 15px 20px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 8px 20px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1e1645;
+            border-color: #1e1645;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            transition: all 0.3s;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            transition: all 0.3s;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #c82333;
+            transform: translateY(-2px);
+        }
+        
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+        
+        .table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .inventory-filters {
+            margin-bottom: 20px;
+        }
+        
+        .inventory-summary {
+            margin-bottom: 30px;
+        }
+        
+        .summary-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .summary-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .summary-label {
+            color: #6c757d;
+        }
+        
+        .input-group-text {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .scan-input {
+            margin-bottom: 20px;
+        }
+        
+        .month-selector {
+            margin-bottom: 20px;
+        }
+        
+        .month-card {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .month-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .month-card.active {
+            border: 2px solid var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-box-open me-2"></i>
+                اسكندويتش - نظام إدارة المخزون
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-home nav-icon"></i>الرئيسية
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="branches.html">
+                            <i class="fas fa-store nav-icon"></i>الفروع
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="products.html">
+                            <i class="fas fa-hamburger nav-icon"></i>المنتجات
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="inventory.html">
+                            <i class="fas fa-clipboard-list nav-icon"></i>جرد المخزون
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="waste.html">
+                            <i class="fas fa-trash nav-icon"></i>الويستات الشهرية
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="purchasesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-shopping-cart nav-icon"></i>المشتريات
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="purchasesDropdown">
+                            <li><a class="dropdown-item" href="purchases.html">المشتريات السريعة</a></li>
+                            <li><a class="dropdown-item" href="invoices.html">الفواتير</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="cost.html">
+                            <i class="fas fa-calculator nav-icon"></i>حساب التكلفة المباشرة
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h1 class="mb-2"><i class="fas fa-clipboard-list me-2"></i> جرد المخزون</h1>
+                    <p class="lead">تحديث كميات المخزون وحساب التكاليف</p>
+                </div>
+                <div class="col-lg-4 text-lg-end d-flex align-items-center justify-content-lg-end">
+                    <button class="btn btn-success" onclick="saveInventory()">
+                        <i class="fas fa-save me-2"></i>حفظ الجرد
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <section class="container">
+        <!-- Month Selector -->
+        <div class="row month-selector">
+            <div class="col-12 mb-3">
+                <h5>اختر الشهر</h5>
+            </div>
+            <div class="col-md-2 col-4 mb-3">
+                <div class="card month-card text-center py-2" onclick="selectMonth(1)" id="month-1">
+                    <div class="card-body p-2">
+                        <h6 class="mb-0">يناير</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-4 mb-3">
+                <div class="card month-card text-center py-2" onclick="selectMonth(2)" id="month-2">
+                    <div class="card-body p-2">
+                        <h6 class="mb-0">فبراير</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-4 mb-3">
+                <div class="card month-card text-center py-2" onclick="selectMonth(3)" id="month-3">
+                    <div class="card-body p-2">
+                        <h6 class="mb-0">مارس</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-4 mb-3">
+                <div class="card month-card text-center py-2" onclick="selectMonth(4)" id="month-4">
+                    <div class="card-body p-2">
+                        <h6 class="mb-0">أبريل</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-4 mb-3">
+                <div class="card month-card text-center py-2 active" onclick="selectMonth(5)" id="month-5">
+                    <div class="card-body p-2">
+                        <h6 class="mb-0">مايو</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-4 mb-3">
+                <div class="card month-card text-center py-2" onclick="selectMonth(6)" id="month-6">
+                    <div class="card-body p-2">
+                        <h6 class="mb-0">يونيو</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-4 mb-3">
+                <div class="card month-card text-center py-2" onclick="selectMonth(7)" id="month-7">
+                    <div class="card-body p-2">
+                        <h6 class="mb-0">يوليو</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-4 mb-3">
+                <div class="card month-card text-center py-2" onclick="selectMonth(8)" id="month-8">
+                    <div class="card-body p-2">
+                        <h6 class="mb-0">أغسطس</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-4 mb-3">
+                <div class="card month-card text-center py-2" onclick="selectMonth(9)" id="month-9">
+                    <div class="card-body p-2">
+                        <h6 class="mb-0">سبتمبر</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-4 mb-3">
+                <div class="card month-card text-center py-2" onclick="selectMonth(10)" id="month-10">
+                    <div class="card-body p-2">
+                        <h6 class="mb-0">أكتوبر</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-4 mb-3">
+                <div class="card month-card text-center py-2" onclick="selectMonth(11)" id="month-11">
+                    <div class="card-body p-2">
+                        <h6 class="mb-0">نوفمبر</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-4 mb-3">
+                <div class="card month-card text-center py-2" onclick="selectMonth(12)" id="month-12">
+                    <div class="card-body p-2">
+                        <h6 class="mb-0">ديسمبر</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scan Input -->
+        <div class="row scan-input">
+            <div class="col-md-8 mb-3">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="مسح باركود المنتج..." id="scanInput">
+                    <button class="btn btn-primary" type="button" onclick="scanProduct()">
+                        <i class="fas fa-barcode me-2"></i>مسح
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-outline-primary me-2" onclick="toggleCamera()">
+                        <i class="fas fa-camera me-1"></i> فتح الكاميرا
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Camera Preview (Hidden by default) -->
+        <div class="row mb-4" id="cameraPreview" style="display: none;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="text-center">
+                            <video id="video" width="100%" height="300" style="border: 1px solid #ddd; border-radius: 5px;"></video>
+                        </div>
+                        <div class="text-center mt-3">
+                            <button class="btn btn-danger" onclick="toggleCamera()">
+                                <i class="fas fa-times me-1"></i> إغلاق الكاميرا
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Filters -->
+        <div class="row inventory-filters">
+            <div class="col-md-4 mb-3">
+                <label for="branchFilter" class="form-label">الفرع</label>
+                <select class="form-select" id="branchFilter" onchange="applyFilters()">
+                    <option value="all">جميع الفروع</option>
+                    <option value="1">فرع السلامة</option>
+                    <option value="2">فرع الحمدانية</option>
+                </select>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="categoryFilter" class="form-label">الفئة</label>
+                <select class="form-select" id="categoryFilter" onchange="applyFilters()">
+                    <option value="all">جميع الفئات</option>
+                    <option value="sandwich">ساندويتشات</option>
+                    <option value="drink">مشروبات</option>
+                    <option value="side">إضافات</option>
+                    <option value="dessert">حلويات</option>
+                </select>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="inventoryDate" class="form-label">تاريخ الجرد</label>
+                <input type="date" class="form-control" id="inventoryDate" value="2025-05-18">
+            </div>
+        </div>
+
+        <!-- Inventory Summary -->
+        <div class="row inventory-summary">
+            <div class="col-md-3 mb-3">
+                <div class="summary-card">
+                    <i class="fas fa-box summary-icon"></i>
+                    <div class="summary-value" id="totalProducts">360</div>
+                    <div class="summary-label">إجمالي المنتجات</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="summary-card">
+                    <i class="fas fa-money-bill-wave summary-icon"></i>
+                    <div class="summary-value" id="totalValue">4,850.00 ريال</div>
+                    <div class="summary-label">إجمالي القيمة</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="summary-card">
+                    <i class="fas fa-exclamation-triangle summary-icon"></i>
+                    <div class="summary-value" id="lowProducts">3</div>
+                    <div class="summary-label">منتجات منخفضة</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="summary-card">
+                    <i class="fas fa-times-circle summary-icon"></i>
+                    <div class="summary-value" id="outOfStock">1</div>
+                    <div class="summary-label">منتجات غير متوفرة</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Table -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0" id="inventoryTitle">قائمة المخزون - شهر مايو 2025</h5>
+                <div>
+                    <button class="btn btn-sm btn-outline-light me-2" onclick="printInventory()">
+                        <i class="fas fa-print me-1"></i> طباعة
+                    </button>
+                    <button class="btn btn-sm btn-outline-light" onclick="exportInventory()">
+                        <i class="fas fa-file-export me-1"></i> تصدير
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>اسم المنتج</th>
+                                <th>الفئة</th>
+                                <th>الكمية السابقة</th>
+                                <th>الكمية الحالية</th>
+                                <th>سعر الوحدة</th>
+                                <th>القيمة الإجمالية</th>
+                                <th>تاريخ التحديث</th>
+                                <th>ملاحظات</th>
+                                <th>المسح</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody">
+                            <!-- Table content will be dynamically generated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer text-center">
+        <div class="container">
+            <p class="mb-0">© 2025 اسكندويتش - نظام إدارة المخزون. جميع الحقوق محفوظة.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables
+        let inventoryData = {};
+        let currentMonth = 5; // Default to May
+        let productsData = []; // Will store products data
+        let deletedProducts = []; // Will store deleted product IDs
+        
+        // Load data from localStorage or initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadInventoryData();
+            loadProductsData();
+            loadDeletedProducts();
+            
+            // Set up scan input event listener
+            document.getElementById('scanInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    scanProduct();
+                }
+            });
+            
+            // Set default date for current month
+            setDateForMonth(currentMonth);
+        });
+        
+        // Load inventory data from localStorage
+        function loadInventoryData() {
+            const storedData = localStorage.getItem('inventoryData');
+            if (storedData) {
+                inventoryData = JSON.parse(storedData);
+            } else {
+                // Initialize with empty data for each month
+                for (let i = 1; i <= 12; i++) {
+                    inventoryData[i] = [];
+                }
+                
+                // Add sample data for May
+                inventoryData[5] = [
+                    {
+                        id: 1,
+                        name: "ساندويتش دجاج",
+                        category: "ساندويتشات",
+                        previousQuantity: 50,
+                        currentQuantity: 45,
+                        unitPrice: 7.50,
+                        totalValue: 337.50,
+                        updateDate: "18/05/2025",
+                        notes: ""
+                    },
+                    {
+                        id: 2,
+                        name: "ساندويتش لحم",
+                        category: "ساندويتشات",
+                        previousQuantity: 35,
+                        currentQuantity: 30,
+                        unitPrice: 9.75,
+                        totalValue: 292.50,
+                        updateDate: "18/05/2025",
+                        notes: ""
+                    },
+                    {
+                        id: 3,
+                        name: "ساندويتش فلافل",
+                        category: "ساندويتشات",
+                        previousQuantity: 65,
+                        currentQuantity: 60,
+                        unitPrice: 4.25,
+                        totalValue: 255.00,
+                        updateDate: "17/05/2025",
+                        notes: ""
+                    },
+                    {
+                        id: 4,
+                        name: "كولا",
+                        category: "مشروبات",
+                        previousQuantity: 150,
+                        currentQuantity: 120,
+                        unitPrice: 2.00,
+                        totalValue: 240.00,
+                        updateDate: "17/05/2025",
+                        notes: ""
+                    },
+                    {
+                        id: 5,
+                        name: "بطاطس مقلية",
+                        category: "إضافات",
+                        previousQuantity: 100,
+                        currentQuantity: 80,
+                        unitPrice: 3.25,
+                        totalValue: 260.00,
+                        updateDate: "16/05/2025",
+                        notes: ""
+                    },
+                    {
+                        id: 6,
+                        name: "كنافة",
+                        category: "حلويات",
+                        previousQuantity: 30,
+                        currentQuantity: 25,
+                        unitPrice: 6.50,
+                        totalValue: 162.50,
+                        updateDate: "16/05/2025",
+                        notes: ""
+                    }
+                ];
+                
+                saveInventoryData();
+            }
+            
+            // Display current month's data
+            displayMonthData(currentMonth);
+        }
+        
+        // Load products data from localStorage
+        function loadProductsData() {
+            const storedData = localStorage.getItem('productsData');
+            if (storedData) {
+                productsData = JSON.parse(storedData);
+            } else {
+                // Initialize with sample data if not exists
+                productsData = [
+                    { id: 1, name: "ساندويتش دجاج", category: "ساندويتشات", price: 7.50, unit: "قطعة" },
+                    { id: 2, name: "ساندويتش لحم", category: "ساندويتشات", price: 9.75, unit: "قطعة" },
+                    { id: 3, name: "ساندويتش فلافل", category: "ساندويتشات", price: 4.25, unit: "قطعة" },
+                    { id: 4, name: "كولا", category: "مشروبات", price: 2.00, unit: "علبة" },
+                    { id: 5, name: "بطاطس مقلية", category: "إضافات", price: 3.25, unit: "كيس" },
+                    { id: 6, name: "كنافة", category: "حلويات", price: 6.50, unit: "قطعة" }
+                ];
+                localStorage.setItem('productsData', JSON.stringify(productsData));
+            }
+        }
+        
+        // Load deleted products from localStorage
+        function loadDeletedProducts() {
+            const storedData = localStorage.getItem('deletedProducts');
+            if (storedData) {
+                deletedProducts = JSON.parse(storedData);
+                
+                // Remove deleted products from inventory
+                removeDeletedProductsFromInventory();
+            } else {
+                deletedProducts = [];
+                localStorage.setItem('deletedProducts', JSON.stringify(deletedProducts));
+            }
+        }
+        
+        // Remove deleted products from inventory
+        function removeDeletedProductsFromInventory() {
+            if (deletedProducts.length === 0) return;
+            
+            let dataChanged = false;
+            
+            // Check each month's inventory
+            for (let month = 1; month <= 12; month++) {
+                if (inventoryData[month] && inventoryData[month].length > 0) {
+                    const originalLength = inventoryData[month].length;
+                    inventoryData[month] = inventoryData[month].filter(item => !deletedProducts.includes(item.id));
+                    
+                    if (originalLength !== inventoryData[month].length) {
+                        dataChanged = true;
+                    }
+                }
+            }
+            
+            if (dataChanged) {
+                saveInventoryData();
+                // If current month is displayed, refresh the view
+                displayMonthData(currentMonth);
+            }
+        }
+        
+        // Save inventory data to localStorage
+        function saveInventoryData() {
+            localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
+            
+            // Update purchases data if needed
+            updatePurchasesBasedOnInventory();
+        }
+        
+        // Update purchases data based on inventory
+        function updatePurchasesBasedOnInventory() {
+            // This function would update purchases data based on inventory changes
+            // For demonstration, we'll just log that it would happen
+            console.log("Purchases data would be updated based on inventory changes");
+            
+            // In a real implementation, this would:
+            // 1. Check inventory levels
+            // 2. Identify items below threshold
+            // 3. Update purchases recommendations
+            // 4. Save to localStorage
+        }
+        
+        // Set date for selected month
+        function setDateForMonth(month) {
+            const year = 2025;
+            const dateInput = document.getElementById('inventoryDate');
+            
+            // Create a date for the 15th of the selected month (middle of month)
+            const date = new Date(year, month - 1, 15);
+            
+            // Format as YYYY-MM-DD for the date input
+            const formattedDate = date.toISOString().split('T')[0];
+            dateInput.value = formattedDate;
+        }
+        
+        // Select a month
+        function selectMonth(month) {
+            currentMonth = month;
+            
+            // Update UI
+            document.querySelectorAll('.month-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            document.getElementById(`month-${month}`).classList.add('active');
+            
+            // Set appropriate date for the month
+            setDateForMonth(month);
+            
+            // Update table header
+            const monthNames = [
+                "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
+                "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
+            ];
+            document.getElementById('inventoryTitle').textContent = `قائمة المخزون - شهر ${monthNames[month-1]} 2025`;
+            
+            // Display data for selected month
+            displayMonthData(month);
+        }
+        
+        // Display data for a specific month
+        function displayMonthData(month) {
+            const tableBody = document.getElementById('inventoryTableBody');
+            tableBody.innerHTML = '';
+            
+            // Get filtered data
+            const monthData = getFilteredData(month);
+            
+            if (monthData.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="10" class="text-center">لا توجد بيانات لهذا الشهر</td>
+                `;
+                tableBody.appendChild(row);
+                
+                // Update summary with zeros
+                updateSummary([]);
+                return;
+            }
+            
+            monthData.forEach(item => {
+                // Get unit from products data
+                const product = productsData.find(p => p.id === item.id);
+                const unit = product ? product.unit : "قطعة";
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.id}</td>
+                    <td>${item.name}</td>
+                    <td>${item.category}</td>
+                    <td>${item.previousQuantity}</td>
+                    <td>
+                        <div class="input-group input-group-sm">
+                            <input type="number" class="form-control quantity-input" value="${item.currentQuantity}" 
+                                   data-id="${item.id}" data-price="${item.unitPrice}" onchange="updateItemTotal(this)">
+                            <span class="input-group-text">${unit}</span>
+                        </div>
+                    </td>
+                    <td>${item.unitPrice.toFixed(2)} ريال</td>
+                    <td class="item-total">${item.totalValue.toFixed(2)} ريال</td>
+                    <td>${item.updateDate}</td>
+                    <td>
+                        <input type="text" class="form-control form-control-sm notes-input" 
+                               data-id="${item.id}" value="${item.notes}" onchange="updateItemNotes(this)">
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="scanItem(${item.id})">
+                            <i class="fas fa-barcode"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Update summary
+            updateSummary(monthData);
+        }
+        
+        // Get filtered data based on current filters
+        function getFilteredData(month) {
+            const branchFilter = document.getElementById('branchFilter').value;
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            
+            let monthData = inventoryData[month] || [];
+            
+            // Apply category filter if not "all"
+            if (categoryFilter !== 'all') {
+                const categoryMap = {
+                    'sandwich': 'ساندويتشات',
+                    'drink': 'مشروبات',
+                    'side': 'إضافات',
+                    'dessert': 'حلويات'
+                };
+                
+                const categoryName = categoryMap[categoryFilter];
+                monthData = monthData.filter(item => item.category === categoryName);
+            }
+            
+            // In a real app, we would also filter by branch
+            // For this demo, we'll just return the category-filtered data
+            return monthData;
+        }
+        
+        // Apply filters
+        function applyFilters() {
+            displayMonthData(currentMonth);
+        }
+        
+        // Update inventory summary
+        function updateSummary(data) {
+            const totalProducts = data.reduce((sum, item) => sum + item.currentQuantity, 0);
+            const totalValue = data.reduce((sum, item) => sum + item.totalValue, 0);
+            const lowProducts = data.filter(item => item.currentQuantity < 30).length;
+            const outOfStock = data.filter(item => item.currentQuantity === 0).length;
+            
+            document.getElementById('totalProducts').textContent = totalProducts;
+            document.getElementById('totalValue').textContent = totalValue.toFixed(2) + ' ريال';
+            document.getElementById('lowProducts').textContent = lowProducts;
+            document.getElementById('outOfStock').textContent = outOfStock;
+        }
+        
+        // Update item total when quantity changes
+        function updateItemTotal(input) {
+            const id = parseInt(input.dataset.id);
+            const unitPrice = parseFloat(input.dataset.price);
+            const quantity = parseInt(input.value);
+            const total = quantity * unitPrice;
+            
+            // Update UI
+            const row = input.closest('tr');
+            const totalCell = row.querySelector('.item-total');
+            totalCell.textContent = total.toFixed(2) + ' ريال';
+            
+            // Update data in memory
+            const monthData = inventoryData[currentMonth] || [];
+            const itemIndex = monthData.findIndex(item => item.id === id);
+            
+            if (itemIndex !== -1) {
+                monthData[itemIndex].currentQuantity = quantity;
+                monthData[itemIndex].totalValue = total;
+                
+                // Update date
+                const today = new Date();
+                const formattedDate = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getFullYear()}`;
+                monthData[itemIndex].updateDate = formattedDate;
+                row.cells[7].textContent = formattedDate;
+                
+                // Save changes
+                saveInventoryData();
+                
+                // Update summary
+                updateSummary(getFilteredData(currentMonth));
+            }
+        }
+        
+        // Update item notes
+        function updateItemNotes(input) {
+            const id = parseInt(input.dataset.id);
+            const notes = input.value;
+            
+            // Update data in memory
+            const monthData = inventoryData[currentMonth] || [];
+            const itemIndex = monthData.findIndex(item => item.id === id);
+            
+            if (itemIndex !== -1) {
+                monthData[itemIndex].notes = notes;
+                
+                // Save changes
+                saveInventoryData();
+            }
+        }
+        
+        // Save inventory
+        function saveInventory() {
+            // Get all rows with data
+            const rows = document.querySelectorAll('#inventoryTableBody tr');
+            const monthData = [];
+            
+            rows.forEach(row => {
+                if (row.cells.length > 1) { // Skip empty rows
+                    const id = parseInt(row.cells[0].textContent);
+                    const name = row.cells[1].textContent;
+                    const category = row.cells[2].textContent;
+                    const previousQuantity = parseInt(row.cells[3].textContent);
+                    const currentQuantity = parseInt(row.querySelector('.quantity-input').value);
+                    const unitPrice = parseFloat(row.cells[5].textContent.replace(' ريال', ''));
+                    const totalValue = parseFloat(row.cells[6].textContent.replace(' ريال', ''));
+                    const updateDate = row.cells[7].textContent;
+                    const notes = row.querySelector('.notes-input').value;
+                    
+                    monthData.push({
+                        id,
+                        name,
+                        category,
+                        previousQuantity,
+                        currentQuantity,
+                        unitPrice,
+                        totalValue,
+                        updateDate,
+                        notes
+                    });
+                }
+            });
+            
+            // Update data
+            inventoryData[currentMonth] = monthData;
+            
+            // Save to localStorage
+            saveInventoryData();
+            
+            // Show success message
+            alert('تم حفظ بيانات الجرد بنجاح');
+        }
+        
+        // Scan product
+        function scanProduct() {
+            const scanInput = document.getElementById('scanInput');
+            const barcode = scanInput.value.trim();
+            
+            if (barcode) {
+                // In a real app, this would look up the barcode
+                // For demo, we'll just increment the first product that matches the barcode
+                // (using the first digit of the barcode as the product ID)
+                const productId = parseInt(barcode[0]);
+                
+                if (!isNaN(productId) && productId > 0 && productId <= 6) {
+                    scanItem(productId);
+                } else {
+                    alert('باركود غير صالح أو منتج غير موجود');
+                }
+                
+                // Clear input
+                scanInput.value = '';
+                scanInput.focus();
+            }
+        }
+        
+        // Scan specific item
+        function scanItem(id) {
+            // Find the input for this item
+            const input = document.querySelector(`.quantity-input[data-id="${id}"]`);
+            
+            if (input) {
+                // Increment the quantity
+                input.value = parseInt(input.value) + 1;
+                
+                // Trigger update
+                updateItemTotal(input);
+                
+                // Highlight the row
+                const row = input.closest('tr');
+                row.style.backgroundColor = '#e8f4f8';
+                setTimeout(() => {
+                    row.style.backgroundColor = '';
+                }, 2000);
+            } else {
+                // Item not in current view, check if it exists in products
+                const product = productsData.find(p => p.id === id);
+                
+                if (product && !deletedProducts.includes(id)) {
+                    // Add to current month's inventory
+                    const today = new Date();
+                    const formattedDate = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getFullYear()}`;
+                    
+                    const newItem = {
+                        id: product.id,
+                        name: product.name,
+                        category: product.category,
+                        previousQuantity: 0,
+                        currentQuantity: 1,
+                        unitPrice: product.price,
+                        totalValue: product.price,
+                        updateDate: formattedDate,
+                        notes: ""
+                    };
+                    
+                    if (!inventoryData[currentMonth]) {
+                        inventoryData[currentMonth] = [];
+                    }
+                    
+                    inventoryData[currentMonth].push(newItem);
+                    saveInventoryData();
+                    
+                    // Refresh display
+                    displayMonthData(currentMonth);
+                } else {
+                    alert('المنتج غير موجود أو تم حذفه');
+                }
+            }
+        }
+        
+        // Toggle camera
+        function toggleCamera() {
+            const cameraPreview = document.getElementById('cameraPreview');
+            const video = document.getElementById('video');
+            
+            if (cameraPreview.style.display === 'none') {
+                cameraPreview.style.display = 'block';
+                
+                // Start camera
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    navigator.mediaDevices.getUserMedia({ video: true })
+                        .then(function(stream) {
+                            video.srcObject = stream;
+                            video.play();
+                        })
+                        .catch(function(error) {
+                            console.error("Camera error: ", error);
+                            alert("لا يمكن الوصول إلى الكاميرا");
+                            cameraPreview.style.display = 'none';
+                        });
+                } else {
+                    alert("الكاميرا غير مدعومة في هذا المتصفح");
+                    cameraPreview.style.display = 'none';
+                }
+            } else {
+                cameraPreview.style.display = 'none';
+                
+                // Stop camera
+                if (video.srcObject) {
+                    const tracks = video.srcObject.getTracks();
+                    tracks.forEach(track => track.stop());
+                    video.srcObject = null;
+                }
+            }
+        }
+        
+        // Print inventory
+        function printInventory() {
+            window.print();
+        }
+        
+        // Export inventory
+        function exportInventory() {
+            const monthNames = [
+                "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
+                "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
+            ];
+            
+            const monthData = getFilteredData(currentMonth);
+            const csvContent = [
+                ['#', 'اسم المنتج', 'الفئة', 'الكمية السابقة', 'الكمية الحالية', 'سعر الوحدة', 'القيمة الإجمالية', 'تاريخ التحديث', 'ملاحظات'],
+                ...monthData.map(item => [
+                    item.id,
+                    item.name,
+                    item.category,
+                    item.previousQuantity,
+                    item.currentQuantity,
+                    item.unitPrice + ' ريال',
+                    item.totalValue + ' ريال',
+                    item.updateDate,
+                    item.notes
+                ])
+            ];
+            
+            const csvString = csvContent.map(row => row.join(',')).join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `جرد_${monthNames[currentMonth-1]}_2025.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Listen for product deletion events
+        window.addEventListener('productDeleted', function(e) {
+            const productId = e.detail.productId;
+            
+            // Add to deleted products list
+            if (!deletedProducts.includes(productId)) {
+                deletedProducts.push(productId);
+                localStorage.setItem('deletedProducts', JSON.stringify(deletedProducts));
+                
+                // Remove from all inventory data
+                removeDeletedProductsFromInventory();
+            }
+        });
+    </script>
+</body>
+</html>

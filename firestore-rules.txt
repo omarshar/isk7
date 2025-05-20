@@ -1,0 +1,153 @@
+// قواعد الأمان لـ Firestore
+// Firestore Security Rules
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // قواعد للمستخدمين المصادق عليهم
+    // Rules for authenticated users
+    match /users/{userId} {
+      // يمكن للمستخدم قراءة وتحديث بياناته الخاصة فقط
+      // User can read and update only their own data
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      // يمكن للمسؤول قراءة وتحديث بيانات جميع المستخدمين
+      // Admin can read and update all user data
+      allow read, write: if request.auth != null && 
+                          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+                          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // قواعد للمنتجات
+    // Rules for products
+    match /products/{productId} {
+      // يمكن للمستخدمين المصادق عليهم قراءة المنتجات
+      // Authenticated users can read products
+      allow read: if request.auth != null;
+      // يمكن للمسؤول ومدير المخزون إضافة وتحديث وحذف المنتجات
+      // Admin and inventory manager can add, update, and delete products
+      allow write: if request.auth != null && 
+                    exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+                    (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+                     get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'inventory_manager');
+    }
+    
+    // قواعد للمخزون
+    // Rules for inventory
+    match /inventory/{itemId} {
+      // يمكن للمستخدمين المصادق عليهم قراءة المخزون
+      // Authenticated users can read inventory
+      allow read: if request.auth != null;
+      // يمكن للمسؤول ومدير المخزون إضافة وتحديث وحذف عناصر المخزون
+      // Admin and inventory manager can add, update, and delete inventory items
+      allow write: if request.auth != null && 
+                    exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+                    (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+                     get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'inventory_manager');
+    }
+    
+    // قواعد للمشتريات
+    // Rules for purchases
+    match /purchases/{purchaseId} {
+      // يمكن للمستخدمين المصادق عليهم قراءة المشتريات
+      // Authenticated users can read purchases
+      allow read: if request.auth != null;
+      // يمكن للمسؤول ومدير المشتريات إضافة وتحديث وحذف المشتريات
+      // Admin and purchase manager can add, update, and delete purchases
+      allow write: if request.auth != null && 
+                    exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+                    (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+                     get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'purchase_manager');
+    }
+    
+    // قواعد للموردين
+    // Rules for suppliers
+    match /suppliers/{supplierId} {
+      // يمكن للمستخدمين المصادق عليهم قراءة الموردين
+      // Authenticated users can read suppliers
+      allow read: if request.auth != null;
+      // يمكن للمسؤول ومدير المشتريات إضافة وتحديث وحذف الموردين
+      // Admin and purchase manager can add, update, and delete suppliers
+      allow write: if request.auth != null && 
+                    exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+                    (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+                     get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'purchase_manager');
+    }
+    
+    // قواعد للفواتير
+    // Rules for invoices
+    match /invoices/{invoiceId} {
+      // يمكن للمستخدمين المصادق عليهم قراءة الفواتير
+      // Authenticated users can read invoices
+      allow read: if request.auth != null;
+      // يمكن للمسؤول إضافة وتحديث وحذف الفواتير
+      // Admin can add, update, and delete invoices
+      allow write: if request.auth != null && 
+                    exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+                    get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // قواعد للفروع
+    // Rules for branches
+    match /branches/{branchId} {
+      // يمكن للمستخدمين المصادق عليهم قراءة الفروع
+      // Authenticated users can read branches
+      allow read: if request.auth != null;
+      // يمكن للمسؤول إضافة وتحديث وحذف الفروع
+      // Admin can add, update, and delete branches
+      allow write: if request.auth != null && 
+                    exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+                    get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // قواعد للتكاليف
+    // Rules for costs
+    match /costs/{costId} {
+      // يمكن للمستخدمين المصادق عليهم قراءة التكاليف
+      // Authenticated users can read costs
+      allow read: if request.auth != null;
+      // يمكن للمسؤول إضافة وتحديث وحذف التكاليف
+      // Admin can add, update, and delete costs
+      allow write: if request.auth != null && 
+                    exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+                    get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // قواعد للهدر
+    // Rules for waste
+    match /waste/{wasteId} {
+      // يمكن للمستخدمين المصادق عليهم قراءة الهدر
+      // Authenticated users can read waste
+      allow read: if request.auth != null;
+      // يمكن للمسؤول ومدير المخزون إضافة وتحديث وحذف الهدر
+      // Admin and inventory manager can add, update, and delete waste
+      allow write: if request.auth != null && 
+                    exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+                    (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+                     get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'inventory_manager');
+    }
+    
+    // قاعدة افتراضية للمستخدم الأول
+    // Default rule for first user
+    match /users/{userId} {
+      // السماح بإنشاء المستخدم الأول كمسؤول
+      // Allow creating the first user as admin
+      allow create: if request.auth != null && 
+                     request.auth.uid == userId && 
+                     !exists(/databases/$(database)/documents/users/$(userId)) &&
+                     request.resource.data.role == 'admin';
+    }
+    
+    // قاعدة افتراضية للمجموعات الأخرى
+    // Default rule for other collections
+    match /{collection}/{document=**} {
+      // السماح بالقراءة للمستخدمين المصادق عليهم
+      // Allow read for authenticated users
+      allow read: if request.auth != null;
+      // السماح بالكتابة للمسؤول فقط
+      // Allow write for admin only
+      allow write: if request.auth != null && 
+                    exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+                    get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+  }
+}
