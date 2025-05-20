@@ -1,0 +1,356 @@
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" id="saveUserBtn">حفظ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteModalLabel">تأكيد الحذف</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>هل أنت متأكد من رغبتك في حذف هذا المستخدم؟</p>
+                    <p class="text-danger">هذا الإجراء لا يمكن التراجع عنه.</p>
+                    <input type="hidden" id="deleteUserId" value="">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">حذف</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-0">© 2025 اسكندويتش - نظام إدارة المخزون. جميع الحقوق محفوظة.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        // Show alert message
+        function showAlert(message, type = 'danger') {
+            const alertElement = document.getElementById('alertMessage');
+            alertElement.className = `alert alert-${type}`;
+            alertElement.textContent = message;
+            alertElement.style.display = 'block';
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                alertElement.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return 'غير محدد';
+            
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ar-EG', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        // Get role display name
+        function getRoleDisplayName(role) {
+            switch(role) {
+                case 'admin':
+                    return 'مدير النظام';
+                case 'inventory_manager':
+                    return 'مسؤول المخزن';
+                case 'purchase_manager':
+                    return 'مسؤول المشتريات';
+                default:
+                    return 'غير محدد';
+            }
+        }
+        
+        // Get role badge class
+        function getRoleBadgeClass(role) {
+            switch(role) {
+                case 'admin':
+                    return 'role-admin';
+                case 'inventory_manager':
+                    return 'role-inventory';
+                case 'purchase_manager':
+                    return 'role-purchase';
+                default:
+                    return '';
+            }
+        }
+        
+        // Load users
+        function loadUsers() {
+            const tableBody = document.getElementById('usersTableBody');
+            tableBody.innerHTML = '<tr><td colspan="6" class="text-center">جاري تحميل البيانات...</td></tr>';
+            
+            getUsers()
+                .then(users => {
+                    if (users.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="6" class="text-center">لا يوجد مستخدمين</td></tr>';
+                        return;
+                    }
+                    
+                    tableBody.innerHTML = '';
+                    users.forEach((user, index) => {
+                        const row = document.createElement('tr');
+                        
+                        // Get current user email
+                        const currentUserEmail = localStorage.getItem('username');
+                        const isCurrentUser = user.email === currentUserEmail;
+                        
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${user.firstName || ''} ${user.lastName || ''}</td>
+                            <td>${user.email}</td>
+                            <td><span class="role-badge ${getRoleBadgeClass(user.role)}">${getRoleDisplayName(user.role)}</span></td>
+                            <td>${formatDate(user.createdAt)}</td>
+                            <td class="action-buttons">
+                                <button class="btn btn-sm btn-outline-primary edit-user" data-email="${user.email}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger delete-user" data-email="${user.email}" ${isCurrentUser ? 'disabled' : ''}>
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        `;
+                        
+                        tableBody.appendChild(row);
+                    });
+                    
+                    // Add event listeners to edit buttons
+                    document.querySelectorAll('.edit-user').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const email = this.getAttribute('data-email');
+                            editUser(email, users);
+                        });
+                    });
+                    
+                    // Add event listeners to delete buttons
+                    document.querySelectorAll('.delete-user').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const email = this.getAttribute('data-email');
+                            document.getElementById('deleteUserId').value = email;
+                            const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+                            deleteModal.show();
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading users:', error);
+                    tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">خطأ في تحميل البيانات: ${error.message}</td></tr>`;
+                    showAlert(`خطأ في تحميل المستخدمين: ${error.message}`);
+                });
+        }
+        
+        // Edit user
+        function editUser(email, users) {
+            // Find user data
+            const user = users.find(u => u.email === email);
+            if (!user) {
+                showAlert('لم يتم العثور على بيانات المستخدم');
+                return;
+            }
+            
+            // Set form values
+            document.getElementById('userId').value = email;
+            document.getElementById('firstName').value = user.firstName || '';
+            document.getElementById('lastName').value = user.lastName || '';
+            document.getElementById('email').value = user.email;
+            document.getElementById('password').value = ''; // Don't show password
+            document.getElementById('role').value = user.role || 'inventory_manager';
+            
+            // Update modal title
+            document.getElementById('userModalLabel').textContent = 'تعديل بيانات المستخدم';
+            
+            // Show modal
+            const userModal = new bootstrap.Modal(document.getElementById('userModal'));
+            userModal.show();
+        }
+        
+        // Save user
+        function saveUser() {
+            const userId = document.getElementById('userId').value;
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+            
+            // Validate form
+            if (!firstName || !lastName || !email || !role) {
+                showAlert('يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+            
+            // Prepare user data
+            const userData = {
+                firstName,
+                lastName,
+                email,
+                role
+            };
+            
+            // If password is provided, add it to user data
+            if (password) {
+                userData.password = password;
+            }
+            
+            // Show loading state
+            const saveBtn = document.getElementById('saveUserBtn');
+            const originalBtnText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> جاري الحفظ...';
+            saveBtn.disabled = true;
+            
+            // If userId is empty, create new user
+            if (!userId) {
+                // Check if password is provided for new user
+                if (!password) {
+                    showAlert('يجب إدخال كلمة المرور للمستخدم الجديد');
+                    saveBtn.innerHTML = originalBtnText;
+                    saveBtn.disabled = false;
+                    return;
+                }
+                
+                // Create new user
+                createUser(userData, role)
+                    .then(() => {
+                        showAlert('تم إنشاء المستخدم بنجاح', 'success');
+                        
+                        // Close modal
+                        const userModal = bootstrap.Modal.getInstance(document.getElementById('userModal'));
+                        userModal.hide();
+                        
+                        // Reset form
+                        document.getElementById('userForm').reset();
+                        
+                        // Reload users
+                        loadUsers();
+                    })
+                    .catch(error => {
+                        console.error('Error creating user:', error);
+                        showAlert(`خطأ في إنشاء المستخدم: ${error.message}`);
+                    })
+                    .finally(() => {
+                        // Reset button
+                        saveBtn.innerHTML = originalBtnText;
+                        saveBtn.disabled = false;
+                    });
+            } else {
+                // Update existing user
+                updateUser(userId, userData)
+                    .then(() => {
+                        showAlert('تم تحديث بيانات المستخدم بنجاح', 'success');
+                        
+                        // Close modal
+                        const userModal = bootstrap.Modal.getInstance(document.getElementById('userModal'));
+                        userModal.hide();
+                        
+                        // Reset form
+                        document.getElementById('userForm').reset();
+                        
+                        // Reload users
+                        loadUsers();
+                    })
+                    .catch(error => {
+                        console.error('Error updating user:', error);
+                        showAlert(`خطأ في تحديث بيانات المستخدم: ${error.message}`);
+                    })
+                    .finally(() => {
+                        // Reset button
+                        saveBtn.innerHTML = originalBtnText;
+                        saveBtn.disabled = false;
+                    });
+            }
+        }
+        
+        // Delete user
+        function deleteUserById() {
+            const email = document.getElementById('deleteUserId').value;
+            if (!email) {
+                showAlert('لم يتم تحديد المستخدم للحذف');
+                return;
+            }
+            
+            // Show loading state
+            const deleteBtn = document.getElementById('confirmDeleteBtn');
+            const originalBtnText = deleteBtn.innerHTML;
+            deleteBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> جاري الحذف...';
+            deleteBtn.disabled = true;
+            
+            // Delete user
+            deleteUser(email)
+                .then(() => {
+                    showAlert('تم حذف المستخدم بنجاح', 'success');
+                    
+                    // Close modal
+                    const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+                    deleteModal.hide();
+                    
+                    // Reload users
+                    loadUsers();
+                })
+                .catch(error => {
+                    console.error('Error deleting user:', error);
+                    showAlert(`خطأ في حذف المستخدم: ${error.message}`);
+                })
+                .finally(() => {
+                    // Reset button
+                    deleteBtn.innerHTML = originalBtnText;
+                    deleteBtn.disabled = false;
+                });
+        }
+        
+        // When DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is admin
+            if (!isAdmin()) {
+                // Redirect to home page
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Load users
+            loadUsers();
+            
+            // Add User button click
+            document.getElementById('addUserBtn').addEventListener('click', function() {
+                // Reset form
+                document.getElementById('userForm').reset();
+                document.getElementById('userId').value = '';
+                
+                // Update modal title
+                document.getElementById('userModalLabel').textContent = 'إضافة مستخدم جديد';
+            });
+            
+            // Save User button click
+            document.getElementById('saveUserBtn').addEventListener('click', saveUser);
+            
+            // Confirm Delete button click
+            document.getElementById('confirmDeleteBtn').addEventListener('click', deleteUserById);
+        });
+    </script>
+</body>
+</html>
